@@ -1,6 +1,5 @@
 import { Flex, Text } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
-import Link from "next/link"
 
 const Header = () => {
   return (
@@ -13,9 +12,9 @@ const Header = () => {
       borderBottom={"1px solid lightgray"}
     >
       <Flex justifyContent="start" direction="row">
-        <Text fontWeight="bold">Logo</Text>
+        <Text fontWeight="bold">ArkaSwapr</Text>
         <Flex width="30%" justifyContent="start" alignItems="center" minW="500" ml="8" gap="8">
-          <Text>
+          {/* <Text>
             <Link href="/">Home</Link>
           </Text>
           <Text>
@@ -23,7 +22,7 @@ const Header = () => {
           </Text>
           <Text>
             <Link href="/setNumber">Set the number</Link>
-          </Text>
+          </Text> */}
         </Flex>
       </Flex>
       <ConnectButton />
