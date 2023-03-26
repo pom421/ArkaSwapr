@@ -23,3 +23,4 @@ REPORT_GAS=true npx hardhat test
 PS: le chainId de HardHat est 31337.
 
 
+yarn create next-app --typescript
