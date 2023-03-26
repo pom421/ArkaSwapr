@@ -1,6 +1,7 @@
 import { MoonIcon, SunIcon } from "@chakra-ui/icons"
 import { Button, Flex, Link, Text, useColorMode } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
+import NextLink from "next/link"
 
 const Header = () => {
   const { colorMode, toggleColorMode } = useColorMode()
@@ -15,18 +16,33 @@ const Header = () => {
       borderBottom={"1px solid lightgray"}
     >
       <Flex justifyContent="start" alignItems="center" direction="row">
-        <Text fontWeight="bold">ArkaSwapr</Text>
+        <Text fontWeight="bold" fontSize="2xl">
+          ArkaSwapr
+        </Text>
         <Flex width="30%" justifyContent="start" alignItems="center" minW="500" ml="8" gap="8">
           <Text>
-            <Link href="/">Home</Link>
+            <Link as={NextLink} href="/">
+              Home
+            </Link>
           </Text>
-          <Button onClick={toggleColorMode} leftIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}>
+          <Text>
+            <Link as={NextLink} href="/store">
+              Mémoriser
+            </Link>
+          </Text>
+          <Text>
+            <Link as={NextLink} href="/retrieve">
+              Récupérer
+            </Link>
+          </Text>
+          <Button
+            variant="link"
+            onClick={toggleColorMode}
+            leftIcon={colorMode === "light" ? <MoonIcon /> : <SunIcon />}
+          >
             {colorMode === "light" ? "Mode sombre" : "Mode clair"}
           </Button>
           {/*
-          <Text>
-            <Link href="/getNumber">Get the number</Link>
-          </Text>
           <Text>
             <Link href="/setNumber">Set the number</Link>
           </Text> */}
