@@ -9,8 +9,8 @@ const Layout = ({ children }: PropsWithChildren) => {
     <ClientOnly>
       <Flex justifyContent="space-between" alignItems="center" direction="column" height="100vh">
         <Header />
-        <Container maxW="800px">
-          <Box flexGrow="1">{children}</Box>
+        <Container maxW="800px" flexGrow="1" py="8">
+          <Box>{children}</Box>
         </Container>
         <Footer />
       </Flex>
