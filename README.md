@@ -24,3 +24,28 @@ PS: le chainId de HardHat est 31337.
 
 
 yarn create next-app --typescript
+
+## Pour générer les types et les hooks de Wagmi
+
+Aller dans le fichier `wagmi.config.ts`
+
+```js
+export default defineConfig({
+  out: "src/generated.ts",
+  contracts: [
+    {
+      name: "Storage",
+      abi: StoreContractAbi,
+      address: StoreContractAddress,
+    },
+  ],
+  plugins: [react()],
+})
+```
+
+Un exemple existe pour la contrat Storage.
+Ici, on a a ajouté un nom (`Storage`), ainsi qu'un abi et une address, qu'on a stocké dans un fichier.
+
+On a également ajouté le plugin react, qui va créer les hooks nécessaire pour lire et écrire dans ce contrat (et les autres qui viendront s'ajouter plus tard dans le fichier).
+
+Donc pour le contrat, on aura par exemple useStorageRetrieve et useStorageStore, qui seront déjà configurés pour appeler les fonctions Solidity.

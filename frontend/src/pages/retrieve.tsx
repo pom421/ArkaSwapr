@@ -1,6 +1,7 @@
 import Layout from "@/components/Layout"
-import { StoreContractAbi } from "@/utils/contracts"
-import { Button, Heading } from "@chakra-ui/react"
+import { StoreContractAbi, StoreContractAddress } from "@/contracts/Storage"
+import { useStorageRetrieve } from "@/generated"
+import { Button, Heading, Text } from "@chakra-ui/react"
 import { ethers } from "ethers"
 import { useState } from "react"
 import { useContractRead, useProvider } from "wagmi"
@@ -8,8 +9,10 @@ import { useContractRead, useProvider } from "wagmi"
 const RetrievePage = () => {
   const [retrieve, setRetrieve] = useState("")
 
+  const { data: dataFromCustomHook } = useStorageRetrieve()
+
   const { data, isError, isLoading } = useContractRead({
-    address: "0x5FbDB2315678afecb367f032d93F642f64180aa3",
+    address: StoreContractAddress,
     abi: StoreContractAbi,
     functionName: "retrieve",
   })
@@ -17,7 +20,7 @@ const RetrievePage = () => {
   const provider = useProvider()
 
   const getTheNumber = async () => {
-    const contract = new ethers.Contract("0x5FbDB2315678afecb367f032d93F642f64180aa3", StoreContractAbi, provider)
+    const contract = new ethers.Contract(StoreContractAddress, StoreContractAbi, provider)
     const smartContractValue = await contract.retrieve()
     setRetrieve(smartContractValue.toString())
   }
@@ -38,9 +41,21 @@ const RetrievePage = () => {
 
       {!isLoading && (
         <p>
-          <>Résultat: {JSON.stringify(data, null, 2)}</>
+          <>Objet data via le hook standard : {JSON.stringify(data, null, 2)}</>
         </p>
       )}
+
+      <p>
+        <>Objet data via le hook généré: {JSON.stringify(dataFromCustomHook, null, 2)}</>
+      </p>
+      <p>
+        <>
+          <Text as="span" mr="4">
+            Récupérer la valeur décimale
+          </Text>
+          {dataFromCustomHook?._hex ? BigInt(dataFromCustomHook?._hex).toString() : "Null"}
+        </>
+      </p>
 
       <Button onClick={getTheNumber}>Récupération</Button>
 
