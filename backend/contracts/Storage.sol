@@ -12,12 +12,16 @@ contract Storage {
 
     uint256 number;
 
+    event ValueStored(uint256 _value);
+
     /**
      * @dev Store value in variable
      * @param num value to store
      */
     function store(uint256 num) public {
         number = num;
+
+        emit ValueStored(num);
     }
 
     /**
