@@ -43,6 +43,8 @@ export default defineConfig({
 })
 ```
 
+Lancer ensuite: `yarn wagmi generate`
+
 Un exemple existe pour la contrat Storage.
 Ici, on a a ajouté un nom (`Storage`), ainsi qu'un abi et une address, qu'on a stocké dans un fichier.
 
