@@ -34,6 +34,7 @@
       }
     ],
     "jsx-a11y/anchor-is-valid": "off",
-    "no-console": "warn"
+    "no-console": "off",
+    "@typescript-eslint/ban-ts-comment": "off"
   }
 }
