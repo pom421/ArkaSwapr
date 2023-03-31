@@ -13,6 +13,8 @@ yarn hardhat node # pour lancer le noeud Ethereum
 yarn hardhat run scripts/deployStorage --network localhost
 ```
 
+PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
+
 ## Pour lancer les tests
 
 ```shell
