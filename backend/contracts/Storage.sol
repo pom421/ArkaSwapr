@@ -9,7 +9,6 @@ pragma solidity ^0.8.9;
  * @custom:dev-run-script ./scripts/deploy_with_ethers.ts
  */
 contract Storage {
-
     uint256 number;
 
     event ValueStored(uint256 _value);
@@ -25,10 +24,10 @@ contract Storage {
     }
 
     /**
-     * @dev Return value 
+     * @dev Return value
      * @return value of 'number'
      */
-    function retrieve() public view returns (uint256){
+    function retrieve() public view returns (uint256) {
         return number;
     }
 }
