@@ -7,10 +7,10 @@ Un protocole pour récompenser l'attention des utilisateurs sur des ressources W
 ### En local
 
 ```shell
-yarn
 cd backend
-yarn hardhat node # pour lancer le noeud Ethereum
-yarn hardhat run scripts/deployStorage --network localhost
+npm install
+npx hardhat node # pour lancer le noeud Ethereum
+npx hardhat run scripts/deployStorage --network localhost
 ```
 
 PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
@@ -25,7 +25,7 @@ REPORT_GAS=true npx hardhat test
 PS: le chainId de HardHat est 31337.
 
 
-yarn create next-app --typescript
+npx create next-app --typescript
 
 ## Pour générer les types et les hooks de Wagmi
 
@@ -45,7 +45,7 @@ export default defineConfig({
 })
 ```
 
-Lancer ensuite: `yarn wagmi generate`
+Lancer ensuite: `npx wagmi generate` # à tester: auparavant, j'utilisais yarn
 
 Un exemple existe pour la contrat Storage.
 Ici, on a a ajouté un nom (`Storage`), ainsi qu'un abi et une address, qu'on a stocké dans un fichier.
