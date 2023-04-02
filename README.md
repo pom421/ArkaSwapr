@@ -7,19 +7,25 @@ Un protocole pour récompenser l'attention des utilisateurs sur des ressources W
 ### En local
 
 ```shell
-cd backend
-npm install
-npx hardhat node # pour lancer le noeud Ethereum
-npx hardhat run scripts/deployStorage --network localhost
+❯ cd backend
+❯ npm install
+❯ npx hardhat node # pour lancer le noeud Ethereum
+❯ npx hardhat run scripts/deployStorage --network localhost
 ```
 
 PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
 
+### Déploiement sur Sepolia
+
+```shell
+❯ npx hardhat run scripts/deployArka.ts --network sepolia
+```
+
 ## Pour lancer les tests
 
 ```shell
-npx hardhat test
-REPORT_GAS=true npx hardhat test
+❯ npx hardhat test
+❯ REPORT_GAS=true npx hardhat test
 ```
 
 PS: le chainId de HardHat est 31337.
