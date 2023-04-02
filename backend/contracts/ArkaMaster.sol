@@ -16,16 +16,27 @@ contract ArkaMaster is Ownable {
     ArkaERC20 public immutable arkaToken;
     
     // TODO: a DAO would be able to allow to set the price of proposal and rewards.
+    
+    /**
+     * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
+     */
     uint etherPrice7days = 600000000000000; // 0,000600 ETH, aka 10€ en avril 2023
+    /**
+     * @dev The reward for interacting with a resource is 2 ARKA.
+     */
     uint amountArkaRewards = 2000000000000000000; // 2 ARKA
 
-    // Make a struct, named Resource, with 3 fields: description, url, duration
+    /**
+     * @notice A resource is a piece of content that can be liked, unliked, loved or toxic.
+     */
     struct Resource {
         string description;
         string url;
         uint endDate;
     }
-    // makes a sort of enum in solidity, named interactType, with values "like", "unlike", "love", "toxic"
+    /**
+     * @notice An interaction is a reaction of a user on a resource.
+     */
     enum InteractType {
         unset,
         like,
@@ -34,10 +45,14 @@ contract ArkaMaster is Ownable {
         toxic
     }
 
-    // Make an array of Resource, named resources
+    /**
+     * @notice List of resources.
+     */
     Resource[] public resources;
 
-    // Mapping of user interactions over an identified resource. A user can only have 1 interaction per resource.
+    /**
+     * @notice List of users's interactions on resources.
+     */
     mapping(uint => mapping(address => InteractType)) public interactions;
 
     event Interaction(uint idResource, address user, InteractType interaction);
@@ -49,6 +64,9 @@ contract ArkaMaster is Ownable {
 
     /**
      * A user can interact one time with a resource (liking, unliking, etc.) and get rewarded by minting 1 token of arkaToken.
+     * 
+     * @param _idResource The id of the resource.
+     * @param _interaction The type of interaction.
      */
     function interact(uint _idResource, InteractType _interaction) public {
         require(
