@@ -14,23 +14,17 @@ import "hardhat/console.sol";
  */
 contract ArkaMaster is Ownable {
     ArkaERC20 public immutable arkaToken;
-    // Mapping of user interactions over an identified resource. A user can only have 1 interaction per resource.
-    mapping(uint => mapping(address => InteractType)) public interactions;
+    
+    // TODO: a DAO would be able to allow to set the price of proposal and rewards.
+    uint etherPrice7days = 600000000000000; // 0,000600 ETH, aka 10€ en avril 2023
+    uint amountArkaRewards = 2000000000000000000; // 2 ARKA
 
     // Make a struct, named Resource, with 3 fields: description, url, duration
     struct Resource {
         string description;
         string url;
-        // uint duration;
+        uint endDate;
     }
-
-    // TODO: a DAO would be able to allow to set the price of proposal and rewards.
-    uint etherPrice7days = 600000000000000; // 0,000600 ETH, aka 10€ en avril 2023
-    uint amountArkaRewards = 2000000000000000000; // 2 ARKA
-
-    // Make an array of Resource, named resources
-    Resource[] public resources;
-
     // makes a sort of enum in solidity, named interactType, with values "like", "unlike", "love", "toxic"
     enum InteractType {
         unset,
@@ -40,8 +34,14 @@ contract ArkaMaster is Ownable {
         toxic
     }
 
+    // Make an array of Resource, named resources
+    Resource[] public resources;
+
+    // Mapping of user interactions over an identified resource. A user can only have 1 interaction per resource.
+    mapping(uint => mapping(address => InteractType)) public interactions;
+
     event Interaction(uint idResource, address user, InteractType interaction);
-    event ResourceProposed(string description, string url);
+    event ResourceProposed(string description, string url, uint endDate);
 
     constructor(address _arkaToken) {
         arkaToken = ArkaERC20(_arkaToken);
@@ -53,7 +53,7 @@ contract ArkaMaster is Ownable {
     function interact(uint _idResource, InteractType _interaction) public {
         require(
             interactions[_idResource][msg.sender] == InteractType.unset,
-            "You already interacted with this resource"
+            "You already add interaction on this resource"
         );
 
         interactions[_idResource][msg.sender] = _interaction;
@@ -73,7 +73,6 @@ contract ArkaMaster is Ownable {
     function proposeResource(
         string calldata _description,
         string calldata _url
-        // uint duration
     ) external payable {
         console.log("dans ProposeResource", _description, msg.value);
         require(
@@ -82,8 +81,8 @@ contract ArkaMaster is Ownable {
         );
 
         // Add the resource to the array of resources
-        resources.push(Resource(_description, _url));
+        resources.push(Resource(_description, _url, block.timestamp + 7 days));
 
-        emit ResourceProposed(_description, _url);
+        emit ResourceProposed(_description, _url, block.timestamp + 7 days);
     }
 }
