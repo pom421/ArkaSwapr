@@ -33,4 +33,5 @@ Private Key: 0x2a871d0798f97d79848a013d4936a73bf4cc922c825d33c1cf7073dff6d409c6
 
 ## Fork du mainnet
 
-Adresse de baleines ayant beaucoup d'USDT: 0xee5b5b923ffce93a870b3104b7ca09c3db80047a
+Adresse de l'USDT sur le mainnet: 0xdAC17F958D2ee523a2206206994597C13D831ec7
+Adresse de baleines ayant beaucoup d'USDT: 0xee5b5b923ffce93a870b3104b7ca09c3db80047a (https://etherscan.io/token/0xdac17f958d2ee523a2206206994597c13d831ec7)
