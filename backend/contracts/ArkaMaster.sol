@@ -15,16 +15,16 @@ import "hardhat/console.sol";
 contract ArkaMaster is Ownable {
     ArkaERC20 public immutable arkaToken;
     
-    // TODO: a DAO would be able to allow to set the price of proposal and rewards.
+    // TODO: make a DAO to allow setting proposal's price and rewards.
     
     /**
      * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
      */
-    uint etherPrice7days = 600000000000000; // 0,000600 ETH, aka 10€ en avril 2023
+    uint etherPrice7days = 6e14; // 0,000600 ETH, aka 10€ en avril 2023
     /**
      * @dev The reward for interacting with a resource is 2 ARKA.
      */
-    uint amountArkaRewards = 2000000000000000000; // 2 ARKA
+    uint amountArkaRewards = 2e18; // 2 ARKA
 
     /**
      * @notice A resource is a piece of content that can be liked, unliked, loved or toxic.
@@ -40,8 +40,8 @@ contract ArkaMaster is Ownable {
     enum InteractType {
         unset,
         like,
-        unlike,
         love,
+        unlike,
         toxic
     }
 
