@@ -2,9 +2,22 @@
 
 Un protocole pour récompenser l'attention des utilisateurs sur des ressources Web3.
 
-## Installation backend
+## Troubleshoot
 
-### En local
+Problème avec hardhat si on mélange l'utilisation de yarn et npm/npx.
+Toujours utiliser npx pour la partie backend.
+Toujours utiliser yarn pour la partie frontend.
+
+## Mémo CLI hardhat
+
+```shell
+npx hardhat help
+npx hardhat test
+REPORT_GAS=true npx hardhat test
+npx hardhat node
+npx hardhat run scripts/deploy.ts
+```
+### Lancement en local
 
 ```shell
 ❯ cd backend

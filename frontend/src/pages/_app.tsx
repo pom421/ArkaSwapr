@@ -4,7 +4,9 @@ import "@rainbow-me/rainbowkit/styles.css"
 import { title } from "@/utils/constants"
 import { ChakraProvider } from "@chakra-ui/react"
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
+import { NextPage } from "next"
 import type { AppProps } from "next/app"
+import { ReactElement, ReactNode } from "react"
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi"
 import { arbitrum, hardhat, mainnet, optimism, polygon, sepolia } from "wagmi/chains"
 import { alchemyProvider } from "wagmi/providers/alchemy"
@@ -26,12 +28,24 @@ const wagmiClient = createClient({
   provider,
 })
 
-export default function App({ Component, pageProps }: AppProps) {
+export type NextPageWithLayout<P = Record<string, never>, IP = P> = NextPage<P, IP> & {
+  getLayout?: (page: ReactElement) => ReactNode
+}
+
+type AppPropsWithLayout = AppProps & {
+  Component: NextPageWithLayout
+}
+
+export default function App({ Component, pageProps }: AppPropsWithLayout) {
+  const getLayout = Component.getLayout || ((page) => page)
+
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
         <ChakraProvider>
-          <Component {...pageProps} />
+          {/* <Component {...pageProps} /> */}
+
+          {getLayout(<Component {...pageProps} />)}
         </ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
