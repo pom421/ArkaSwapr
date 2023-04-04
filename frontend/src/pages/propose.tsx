@@ -36,7 +36,7 @@ const ethPrice7Days = "0.0006"
 
 export default function Propose() {
   const [errors, setErrors] = useState<FormErrorType>({})
-  const [parent] = useAutoAnimate(/* optional config */)
+  const [parent] = useAutoAnimate()
   const [description, setDescription] = useState("")
   const [url, setUrl] = useState("")
   const [currency, setCurrency] = useState("")
@@ -63,9 +63,7 @@ export default function Propose() {
     if (hasErrors(errors)) return setErrors(errors)
     else {
       setErrors({})
-      //TODO
-      console.log("handleSubmit", description, url, currency)
-
+      console.debug("handleSubmit", description, url, currency)
       write?.()
     }
   }

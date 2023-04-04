@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0x0724F18B2aA7D6413D3fDcF6c0c27458a8170Dd9"
+export const ArkaMasterContractAddress = "0xa195ACcEB1945163160CD5703Ed43E4f78176a54"
 
 export const ArkaMasterContractAbi = [
   {
@@ -11,6 +11,31 @@ export const ArkaMasterContractAbi = [
     ],
     stateMutability: "nonpayable",
     type: "constructor",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "idResource",
+        type: "uint256",
+      },
+      {
+        indexed: false,
+        internalType: "address",
+        name: "user",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "enum ArkaMaster.InteractType",
+        name: "interaction",
+        type: "uint8",
+      },
+    ],
+    name: "Interaction",
+    type: "event",
   },
   {
     anonymous: false,
@@ -32,6 +57,31 @@ export const ArkaMasterContractAbi = [
     type: "event",
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "string",
+        name: "description",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "string",
+        name: "url",
+        type: "string",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "endDate",
+        type: "uint256",
+      },
+    ],
+    name: "ResourceProposed",
+    type: "event",
+  },
+  {
     inputs: [],
     name: "arkaToken",
     outputs: [
@@ -48,12 +98,36 @@ export const ArkaMasterContractAbi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "idResource",
+        name: "_idResource",
+        type: "uint256",
+      },
+      {
+        internalType: "address",
+        name: "_user",
+        type: "address",
+      },
+    ],
+    name: "getInteraction",
+    outputs: [
+      {
+        internalType: "enum ArkaMaster.InteractType",
+        name: "",
+        type: "uint8",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_idResource",
         type: "uint256",
       },
       {
         internalType: "enum ArkaMaster.InteractType",
-        name: "interaction",
+        name: "_interaction",
         type: "uint8",
       },
     ],
@@ -143,6 +217,11 @@ export const ArkaMasterContractAbi = [
         internalType: "string",
         name: "url",
         type: "string",
+      },
+      {
+        internalType: "uint256",
+        name: "endDate",
+        type: "uint256",
       },
     ],
     stateMutability: "view",

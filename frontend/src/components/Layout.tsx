@@ -23,6 +23,7 @@ import NextLink from "next/link"
 import { ReactNode, ReactText } from "react"
 import { IconType } from "react-icons"
 import { FiCompass, FiHome, FiMenu, FiStar, FiTrendingUp } from "react-icons/fi"
+import { ClientOnly } from "./ClientOnly"
 
 interface LinkItemProps {
   name: string
@@ -64,7 +65,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         {/* mobilenav */}
         <MobileNav onOpen={onOpen} />
         <Box ml={{ base: 0, md: 60 }} p="4">
-          {children}
+          <ClientOnly>{children}</ClientOnly>
         </Box>
       </Box>
     </>
@@ -94,9 +95,9 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
         <CloseButton display={{ base: "flex", md: "none" }} onClick={onClose} />
       </Flex>
       {linkItems.map((link) => (
-        <Link as={NextLink} href={link.url} key={link.name}>
-          <NavItem icon={link.icon}>{link.name}</NavItem>
-        </Link>
+        <NavItem key={link.name} icon={link.icon} url={link.url}>
+          {link.name}
+        </NavItem>
       ))}
     </Box>
   )
@@ -105,10 +106,11 @@ const SidebarContent = ({ onClose, ...rest }: SidebarProps) => {
 interface NavItemProps extends FlexProps {
   icon: IconType
   children: ReactText
+  url: string
 }
-const NavItem = ({ icon, children, ...rest }: NavItemProps) => {
+const NavItem = ({ icon, children, url, ...rest }: NavItemProps) => {
   return (
-    <Link href="#" style={{ textDecoration: "none" }} _focus={{ boxShadow: "none" }}>
+    <Link as={NextLink} href={url} style={{ textDecoration: "none" }} _focus={{ boxShadow: "none" }}>
       <Flex
         align="center"
         p="4"
