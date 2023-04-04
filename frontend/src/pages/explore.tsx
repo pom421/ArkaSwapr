@@ -1,3 +1,4 @@
+import { ConnectedUserOnly } from "@/components/ConnectedUserOnly"
 import { Explore } from "@/components/Explore"
 import Layout from "@/components/Layout"
 import { useConnectedUser } from "@/hooks/useConnectedUser"
@@ -8,7 +9,10 @@ export default function ExplorePage() {
 
   return (
     <main>
-      <Explore userAddress={userAddress} />
+      <ConnectedUserOnly userAddress={userAddress}>
+        {/* In ConnectedUserOnly, userAddress can't be null so ! is allowed here. */}
+        <Explore userAddress={userAddress!} />
+      </ConnectedUserOnly>
     </main>
   )
 }

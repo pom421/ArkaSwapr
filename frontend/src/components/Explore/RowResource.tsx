@@ -16,23 +16,9 @@ export const RowResource = ({
   index: number
   userAddress: string
 }) => {
-  // const { data, error, isError } = useArkaMasterResources({
-  //   args: [BigNumber.from(1)],
-  // })
-
-  // useArkaMasterInteractions({
-  //   args: [BigNumber.from(1)],
-  // })
-
   const { data: interaction } = useArkaMasterGetInteraction({
     args: [BigNumber.from(index), getAddress(userAddress)],
   })
-
-  // console.log("error", error)
-
-  console.log("index", index)
-
-  console.log("interaction", InteractionType[interaction || 0])
 
   const color = { colorScheme: "cyan" }
 
