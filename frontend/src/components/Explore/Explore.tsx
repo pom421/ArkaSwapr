@@ -1,5 +1,4 @@
-import { Resource } from "@/arkaTypes"
-import { useArkaMaster } from "@/generated"
+import { useResourcesFromEvent } from "@/hooks/useResourcesFromEvent"
 import {
   Alert,
   AlertIcon,
@@ -15,19 +14,7 @@ import {
   Tr,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { useEffect, useState } from "react"
-import { useProvider } from "wagmi"
 import { RowResource } from "./RowResource"
-
-/**
- * Show only resources that are not finished yet.
- *
- * @param resources List of resources from the contract
- * @returns valid resources
- */
-const filterResources = (resources: Resource[]) => {
-  return resources.filter((resource) => resource.endDate.toNumber() * 1000 > Date.now())
-}
 
 type Props = {
   userAddress: string
@@ -35,45 +22,7 @@ type Props = {
 
 export const Explore = ({ userAddress }: Props) => {
   const [parent] = useAutoAnimate()
-  const [resources, setResources] = useState<Resource[]>()
-  const provider = useProvider()
-  const arkaMasterContract = useArkaMaster({ signerOrProvider: provider })
-
-  const validResources = filterResources(resources || [])
-
-  // Récupération des events passés de manière statique.
-  useEffect(() => {
-    const run = async () => {
-      if (arkaMasterContract) {
-        // @ts-ignore
-        const filters = arkaMasterContract.filters.ResourceProposed()
-
-        if (filters && arkaMasterContract) {
-          const allEvents = await arkaMasterContract.queryFilter(filters, 0, "latest")
-
-          setResources(
-            allEvents.map((event) => ({
-              description: event.args?.[0],
-              url: event.args?.[1],
-              endDate: event.args?.[2],
-            })),
-          )
-        }
-      }
-    }
-
-    run()
-  }, [arkaMasterContract])
-
-  const handleClick = async ({ idResource, idInteract }: { idResource: number; idInteract: number }) => {
-    // const config = await prepareWriteContract({
-    //   address: ArkaMasterContractAddress,
-    //   abi: ArkaMasterContractAbi,
-    //   functionName: "interact",
-    //   args: [BigNumber(idResource), idInteract],
-    // })
-    // const data = await writeContract(config)
-  }
+  const resources = useResourcesFromEvent()
 
   return (
     <main>
@@ -102,7 +51,7 @@ export const Explore = ({ userAddress }: Props) => {
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {validResources?.map((resource, index) => (
+                    {resources?.map((resource, index) => (
                       <RowResource key={index} resource={resource} index={index} userAddress={userAddress} />
                     ))}
                   </Tbody>

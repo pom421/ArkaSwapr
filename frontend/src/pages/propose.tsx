@@ -1,5 +1,6 @@
 import Layout from "@/components/Layout"
 import { useArkaMasterProposeResource, usePrepareArkaMasterProposeResource } from "@/generated"
+import { AtSignIcon } from "@chakra-ui/icons"
 import {
   Alert,
   AlertIcon,
@@ -128,7 +129,12 @@ export default function Propose() {
               <FormControl>
                 <FormLabel>Token</FormLabel>
                 <Select name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                  <option value="USDT">USDT</option>
+                  <option value="USDT">
+                    <Flex>
+                      <AtSignIcon />
+                      USDT xx
+                    </Flex>
+                  </option>
                   <option value="wETH">wETH</option>
                 </Select>
               </FormControl>
