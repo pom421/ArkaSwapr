@@ -1,6 +1,6 @@
 import { InteractionType, Resource } from "@/arkaTypes"
 import { useArkaMasterGetInteraction } from "@/generated"
-import { DeleteIcon } from "@chakra-ui/icons"
+import { CheckIcon, DeleteIcon } from "@chakra-ui/icons"
 import { ButtonGroup, Flex, IconButton, Link, Td, Text, Tr } from "@chakra-ui/react"
 import { BigNumber } from "ethers"
 import { getAddress } from "ethers/lib/utils.js"
@@ -41,32 +41,40 @@ export const RowResource = ({
         </Flex>
       </Td>
       <Td>
-        <ButtonGroup size="lg" isAttached variant="outline">
-          <IconButton
-            aria-label="like"
-            icon={<FiThumbsUp />}
-            {...(interaction === InteractionType.like && color)}
-            {...disabled}
-          />
-          <IconButton
-            aria-label="unlike"
-            icon={<FiThumbsDown />}
-            {...(interaction === InteractionType.unlike && color)}
-            {...disabled}
-          />
-          <IconButton
-            aria-label="love"
-            icon={<FiHeart />}
-            {...(interaction === InteractionType.love && color)}
-            {...disabled}
-          />
-          <IconButton
-            aria-label="like"
-            icon={<DeleteIcon />}
-            {...(interaction === InteractionType.toxic && color)}
-            {...disabled}
-          />
-        </ButtonGroup>
+        <Flex gap="8" justifyContent="center" alignItems="center">
+          <ButtonGroup size="lg" isAttached variant="outline">
+            <IconButton
+              aria-label="like"
+              icon={<FiThumbsUp />}
+              {...(interaction === InteractionType.like && color)}
+              {...disabled}
+            />
+            <IconButton
+              aria-label="unlike"
+              icon={<FiThumbsDown />}
+              {...(interaction === InteractionType.unlike && color)}
+              {...disabled}
+            />
+            <IconButton
+              aria-label="love"
+              icon={<FiHeart />}
+              {...(interaction === InteractionType.love && color)}
+              {...disabled}
+            />
+            <IconButton
+              aria-label="like"
+              icon={<DeleteIcon />}
+              {...(interaction === InteractionType.toxic && color)}
+              {...disabled}
+            />
+          </ButtonGroup>
+          {interaction !== InteractionType.unset && (
+            <>
+              <Text color="green.400">+ 2 Arkas</Text>
+              <CheckIcon color="green.400" />
+            </>
+          )}
+        </Flex>
       </Td>
     </Tr>
   )
