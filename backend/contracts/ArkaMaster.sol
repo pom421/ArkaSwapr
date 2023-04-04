@@ -14,9 +14,9 @@ import "hardhat/console.sol";
  */
 contract ArkaMaster is Ownable {
     ArkaERC20 public immutable arkaToken;
-    
+
     // TODO: make a DAO to allow setting proposal's price and rewards.
-    
+
     /**
      * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
      */
@@ -51,7 +51,7 @@ contract ArkaMaster is Ownable {
     Resource[] public resources;
 
     /**
-     * @notice List of users's interactions on resources.
+     * @notice List of users's interactions on resources (id resource => user => interaction).
      */
     mapping(uint => mapping(address => InteractType)) public interactions;
 
@@ -62,9 +62,16 @@ contract ArkaMaster is Ownable {
         arkaToken = ArkaERC20(_arkaToken);
     }
 
+    function getInteraction(
+        uint _idResource,
+        address _user
+    ) external view returns (InteractType) {
+        return interactions[_idResource][_user];
+    }
+
     /**
      * A user can interact one time with a resource (liking, unliking, etc.) and get rewarded by minting 1 token of arkaToken.
-     * 
+     *
      * @param _idResource The id of the resource.
      * @param _interaction The type of interaction.
      */
@@ -84,7 +91,7 @@ contract ArkaMaster is Ownable {
 
     /**
      * A user can propose a resource to be added to the platform.
-     * 
+     *
      * @param _description The description to be added in the UI.
      * @param _url The URL of the resource.
      */
