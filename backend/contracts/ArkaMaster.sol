@@ -39,8 +39,8 @@ contract ArkaMaster is Ownable {
      */
     enum InteractType {
         unset,
-        like,
         love,
+        like,
         unlike,
         toxic
     }

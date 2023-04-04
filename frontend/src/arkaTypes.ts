@@ -8,8 +8,8 @@ export type Resource = {
 
 export enum InteractionType {
   unset = 0,
-  like,
   love,
+  like,
   unlike,
   toxic,
 }
