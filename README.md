@@ -2,11 +2,34 @@
 
 Un protocole pour récompenser l'attention des utilisateurs sur des ressources Web3.
 
+### Run en développement
+
+```
+npx hardhat node
+cd backend
+npx hardhat run scripts/deployArka --network localhost # récupérer l'adresse du contrat (et éventuellement, copier l'ABI si changement)
+cd ../frontend
+yarn wagmi generate
+# modifier adresse du contrat + abi dans frontend/src/contracts/ArkaMaster.ts/
+yarn dev
+```
+
 ## Troubleshoot
 
-Problème avec hardhat si on mélange l'utilisation de yarn et npm/npx.
-Toujours utiliser npx pour la partie backend.
-Toujours utiliser yarn pour la partie frontend.
+1. Hardhat demande à ajouter des librairies supplémentaires et ethers n'est pas reconnu dans les imports.
+
+Ces librairies ne sont pas nécessaires car elles sont importées via `@nomicfoundation/hardhat-toolbox` normalement.
+Cela arrive quand on mélange l'utilisation de npx avec yarn. 
+
+Solution 
+- Toujours utiliser npx pour la partie backend.
+- Toujours utiliser yarn pour la partie frontend.
+
+2. Problème dans les logs d'ethers. Nonce pas cohérent.
+
+C'est un problème du wallet. Aller dans MetaMask > Paramètres avancés > Réinitialiser le compte.
+
+
 
 ## Mémo CLI hardhat
 
@@ -72,3 +95,10 @@ Ici, on a a ajouté un nom (`Storage`), ainsi qu'un abi et une address, qu'on a 
 On a également ajouté le plugin react, qui va créer les hooks nécessaire pour lire et écrire dans ce contrat (et les autres qui viendront s'ajouter plus tard dans le fichier).
 
 Donc pour le contrat, on aura par exemple useStorageRetrieve et useStorageStore, qui seront déjà configurés pour appeler les fonctions Solidity.
+
+### FAQ
+
+`Comment voir le nombre d'ARKA possédés ?`
+
+Copier l'adresse du contrat ArkaERC20.
+Aller dans MetaMask, actifs > importer des jetons et copier l'adresse du contrat.
