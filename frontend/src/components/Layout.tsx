@@ -32,9 +32,9 @@ interface LinkItemProps {
 }
 const linkItems: Array<LinkItemProps> = [
   { name: "Home", icon: FiHome, url: "/" },
+  { name: "Propose", icon: FiStar, url: "./propose" },
   { name: "Explore", icon: FiCompass, url: "./explore" },
   { name: "Staking", icon: FiTrendingUp, url: "./staking" },
-  { name: "Propose", icon: FiStar, url: "./propose" },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {

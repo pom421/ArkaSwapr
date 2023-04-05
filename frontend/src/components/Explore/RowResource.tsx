@@ -38,7 +38,14 @@ export const RowResource = ({
   }
 
   const handleClick = async (interaction: InteractionType) => {
-    if (!isVisited) return toast({ title: "Merci de visiter le lien avant de voter.", duration: 4000 })
+    if (!isVisited)
+      return toast({
+        title: "Action requise",
+        description: "Il est nécessaire de visiter le lien avant de voter.",
+        status: "warning",
+        duration: 4000,
+        isClosable: true,
+      })
 
     try {
       await arkaMasterContractWrite?.interact(BigNumber.from(index), interaction)
