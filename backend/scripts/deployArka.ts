@@ -10,6 +10,14 @@ async function signerInfo() {
   console.log("Account balance:", await ethers.utils.formatEther(weiAmount));
 }
 
+async function deployOracle() {
+  const Oracle = await ethers.getContractFactory("ChainlinkEthUsd");
+  const oracle = await Oracle.deploy();
+  await oracle.deployed();
+
+  console.log(`Oracle deployed to ${oracle.address}`);
+}
+
 async function main() {
   await signerInfo();
 
@@ -26,6 +34,8 @@ async function main() {
   // (${ethers.utils.getAddress(arkaERC20.address)})
   console.log(`ArkaERC20 deployed to ${arkaERC20.address}`);
   console.log(`ArkaMaster deployed to ${arkaMaster.address}`);
+
+  await deployOracle();
 }
 
 // We recommend this pattern to be able to use async/await everywhere
