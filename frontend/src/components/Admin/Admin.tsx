@@ -15,9 +15,11 @@ import {
     Heading,
     Input,
     Text,
+    useColorModeValue,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { BigNumber } from "ethers"
+import { formatEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useProvider } from "wagmi"
 
@@ -31,6 +33,9 @@ export const Admin = () => {
   const [errors, setErrors] = useState<FormProps>({})
   const [globalAmount, setGlobalAmount] = useState("")
   const [balanceArkaMaster, setBalanceArkaMaster] = useState<BigNumber>()
+  const color = useColorModeValue("blue.500", "cyan.500")
+
+  const balanceInEther = formatEther(balanceArkaMaster || "0")
 
   const isLoading = false
 
@@ -41,19 +46,19 @@ export const Admin = () => {
     run()
   }, [provider])
 
-  console.log("balanceArkaMaster:", balanceArkaMaster?.toString())
-
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (globalAmount === "") return setErrors({ globalAmount: "Veuillez renseigner un montant" })
+
+    if (Number(balanceInEther) === 0) return setErrors({ globalAmount: "Pas de fonds disponibles" })
 
     console.log("dans submit")
   }
 
   return (
     <main>
-      <Container maxW={"6xl"}>
+      <Container maxW={"4xl"}>
         <Flex direction="column" gap="8">
           <Heading as="h1" mt="8">
             Admin
@@ -63,6 +68,13 @@ export const Admin = () => {
             Nouveau stake
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
+
+          <Text fontSize="lg">
+            ETH disponible
+            <Text as="span" color={color} ml="4">
+              {balanceInEther}
+            </Text>
+          </Text>
 
           <div ref={parent}>
             {hasErrors(errors) && (
@@ -75,7 +87,7 @@ export const Admin = () => {
           </div>
 
           <form onSubmit={handleSubmit}>
-            <Flex direction="column" gap="4">
+            <Flex direction="row" gap="4">
               <FormControl isInvalid={Boolean(errors?.globalAmount)}>
                 <FormLabel>Montant</FormLabel>
                 <Input
@@ -89,10 +101,10 @@ export const Admin = () => {
                 />
                 <FormErrorMessage>{errors?.globalAmount}</FormErrorMessage>
               </FormControl>
+              <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
+                Démarrer
+              </Button>
             </Flex>
-            <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
-              Démarrer
-            </Button>
           </form>
         </Flex>
       </Container>
