@@ -29,7 +29,7 @@ export const Explore = ({ userAddress }: Props) => {
       <Container maxW={"6xl"}>
         <Flex direction="column" gap="8">
           <Heading as="h1" mt="8">
-            Explorer
+            Explore
           </Heading>
 
           <Text fontSize="lg">Regarde un site et donne ton avis. 2 ARKA de récompenses à chaque interaction.</Text>

@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0xE7FF84Df24A9a252B6E8A5BB093aC52B1d8bEEdf"
+export const ArkaMasterContractAddress = "0x0724F18B2aA7D6413D3fDcF6c0c27458a8170Dd9"
 
 export const ArkaMasterContractAbi = [
   {

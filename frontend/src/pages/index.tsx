@@ -1,10 +1,20 @@
 import Layout from "@/components/Layout"
+import { useConnectedUser } from "@/hooks/useConnectedUser"
 import styles from "@/styles/Home.module.css"
-import { Box, Button, Container, Heading, Icon, Stack, Text, createIcon, useColorModeValue } from "@chakra-ui/react"
+import { Box, Container, Heading, Icon, Stack, Text, createIcon, useColorModeValue } from "@chakra-ui/react"
+import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { ReactElement } from "react"
 
 export default function Home() {
+  const userAddress = useConnectedUser()
+  const router = useRouter()
+
+  if (userAddress) {
+    router.push("/explore")
+  }
+
   return (
     <>
       <Head>
@@ -19,7 +29,7 @@ export default function Home() {
             <Heading fontWeight={600} fontSize={{ base: "2xl", sm: "4xl", md: "6xl" }} lineHeight={"110%"}>
               Gagner des tokens en <br />
               <Text as={"span"} color={"green.400"}>
-                visitant des sites
+                surfant
               </Text>
             </Heading>
             <Text color={"gray.500"}>
@@ -27,7 +37,7 @@ export default function Home() {
               des tokens Arka. Staker vos Arka et gagner des tokens wETH ou USDT.
             </Text>
             <Stack direction={"column"} spacing={3} align={"center"} alignSelf={"center"} position={"relative"}>
-              <Button
+              {/* <Button
                 colorScheme={"green"}
                 bg={"green.400"}
                 rounded={"full"}
@@ -37,7 +47,8 @@ export default function Home() {
                 }}
               >
                 Je me connecte
-              </Button>
+              </Button> */}
+              <ConnectButton label="Je me connecte" />
               {/* <Button variant={"link"} colorScheme={"blue"} size={"sm"}>
                 Learn more
               </Button> */}
