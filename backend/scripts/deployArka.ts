@@ -1,5 +1,9 @@
 import { ethers } from "hardhat";
 
+// Addresses ETH / USD for Chainlink.
+const addressChainlinkMainnet = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
+const addressChainlinkSepolia = "0x694AA1769357215DE4FAC081bf1f309aDC325306";
+
 async function signerInfo() {
   const [deployer] = await ethers.getSigners();
 
@@ -12,7 +16,7 @@ async function signerInfo() {
 
 async function deployOracle() {
   const Oracle = await ethers.getContractFactory("ChainlinkEthUsd");
-  const oracle = await Oracle.deploy();
+  const oracle = await Oracle.deploy(addressChainlinkMainnet);
   await oracle.deployed();
 
   console.log(`Oracle deployed to ${oracle.address}`);

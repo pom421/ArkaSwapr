@@ -7,13 +7,10 @@ contract ChainlinkEthUsd {
     AggregatorV3Interface internal priceFeedEthUsd;
 
     /**
-     * Network: Sepolia
-     * Aggregator: ETH/USD
+     * Chainlink aggregator ETH/USD
      */
-    constructor() {
-        priceFeedEthUsd = AggregatorV3Interface(
-            0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419
-        );
+    constructor(address _priceFeedEthUsd) {
+        priceFeedEthUsd = AggregatorV3Interface(_priceFeedEthUsd);
     }
 
     /**
