@@ -173,7 +173,7 @@ const MobileNav = ({ onOpen, ...rest }: MobileProps) => {
       <HStack spacing={{ base: "0", md: "6" }}>
         <Button onClick={toggleColorMode}>{colorMode === "light" ? <MoonIcon /> : <SunIcon />}</Button>
         <Flex alignItems={"center"}>
-          <ConnectButton />
+          <ConnectButton label="Se connecter" />
           {/* <Menu>
             <MenuButton py={2} transition="all 0.3s" _focus={{ boxShadow: "none" }}>
               <HStack>
