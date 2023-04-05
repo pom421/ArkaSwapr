@@ -14,6 +14,8 @@ const filterResources = (resources: Resource[]) => {
   return resources.filter((resource) => resource.endDate.toNumber() * 1000 > Date.now())
 }
 
+const eventName = "ResourceProposed"
+
 export const useResourcesFromEvent = () => {
   const [resources, setResources] = useState<Resource[]>([])
   const provider = useProvider()
@@ -24,7 +26,7 @@ export const useResourcesFromEvent = () => {
     const run = async () => {
       if (arkaMasterContract) {
         // @ts-ignore
-        const filters = arkaMasterContract.filters.ResourceProposed()
+        const filters = arkaMasterContract.filters[eventName]()
 
         if (filters && arkaMasterContract) {
           const allEvents = await arkaMasterContract.queryFilter(filters, 0, "latest")
