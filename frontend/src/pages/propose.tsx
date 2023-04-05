@@ -20,7 +20,7 @@ import {
   Input,
   Select,
   Text,
-  useToast
+  useToast,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { ethers } from "ethers"
