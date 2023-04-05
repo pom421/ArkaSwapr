@@ -1,9 +1,15 @@
 import Layout from "@/components/Layout"
-import { useArkaMasterProposeResource, usePrepareArkaMasterProposeResource } from "@/generated"
+import {
+  useArkaMasterGetPriceForProposalInWei,
+  useArkaMasterProposeResource,
+  usePrepareArkaMasterProposeResource,
+} from "@/generated"
+import { hasErrors } from "@/utils/errors"
 import { AtSignIcon } from "@chakra-ui/icons"
 import {
   Alert,
   AlertIcon,
+  AlertTitle,
   Button,
   Container,
   Flex,
@@ -14,10 +20,11 @@ import {
   Input,
   Select,
   Text,
+  useToast
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { ethers } from "ethers"
-import { FormEventHandler, ReactElement, useState } from "react"
+import { FormEventHandler, ReactElement, useEffect, useState } from "react"
 
 type FormErrorType = {
   description?: string
@@ -26,25 +33,22 @@ type FormErrorType = {
 
 const regex = /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/gi
 
-const hasErrors = (errors: FormErrorType) => {
-  for (const value of Object.values(errors)) {
-    if (value) return true
-  }
-  return false
-}
-
-const ethPrice7Days = "0.0006"
-
 export default function Propose() {
   const [errors, setErrors] = useState<FormErrorType>({})
   const [parent] = useAutoAnimate()
   const [description, setDescription] = useState("")
   const [url, setUrl] = useState("")
   const [currency, setCurrency] = useState("")
+  const toast = useToast()
+
+  const priceInWei = useArkaMasterGetPriceForProposalInWei()
+
+  const priceInWeiString = ethers.utils.formatEther(priceInWei?.data || "0")
+
   const { config } = usePrepareArkaMasterProposeResource({
     args: [description, url],
     overrides: {
-      value: ethers.utils.parseEther(ethPrice7Days),
+      value: ethers.utils.parseEther(priceInWeiString),
     },
   })
   const { isLoading, isSuccess, write } = useArkaMasterProposeResource(config)
@@ -69,6 +73,21 @@ export default function Propose() {
     }
   }
 
+  useEffect(() => {
+    if (isSuccess) {
+      toast({
+        title: "La ressource a été ajoutée.",
+        description: "Votre ressource sera visible dans quelques instants.",
+        duration: 5000,
+        isClosable: true,
+      })
+
+      setDescription("")
+      setUrl("")
+      setCurrency("")
+    }
+  }, [isSuccess, toast])
+
   return (
     <main>
       <Container maxW={"3xl"}>
@@ -79,20 +98,15 @@ export default function Propose() {
 
           <Text fontSize="lg">Proposer un nouveau site que tous les utilisateurs pourront voir.</Text>
 
-          <Text fontSize="lg">Seulement 10$ pour 7 jours de visibilité. Paiement en USDT ou en wETH.</Text>
+          <Text fontSize="lg">
+            Seulement 10$ (en équivalent ether) pour 7 jours de visibilité. Paiement en USDT ou en wETH.
+          </Text>
 
           <div ref={parent}>
             {hasErrors(errors) && (
               <Alert status="error">
                 <AlertIcon />
                 Veuillez corriger le formulaire.
-              </Alert>
-            )}
-
-            {isSuccess && (
-              <Alert status="success">
-                <AlertIcon />
-                La ressource a été ajoutée.
               </Alert>
             )}
           </div>
@@ -132,12 +146,18 @@ export default function Propose() {
                   <option value="USDT">
                     <Flex>
                       <AtSignIcon />
-                      USDT xx
+                      USDT
                     </Flex>
                   </option>
                   <option value="wETH">wETH</option>
                 </Select>
               </FormControl>
+              <Alert status="info" mt="8" variant="solid">
+                <AlertIcon />
+                {/* Mettre un titre à l'alert */}
+                <AlertTitle>Estimation du prix</AlertTitle>
+                <Text> {priceInWeiString} ethers</Text>
+              </Alert>
               <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
                 Ajouter
               </Button>
