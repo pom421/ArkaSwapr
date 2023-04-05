@@ -35,6 +35,7 @@ const linkItems: Array<LinkItemProps> = [
   { name: "Propose", icon: FiStar, url: "./propose" },
   { name: "Explore", icon: FiCompass, url: "./explore" },
   { name: "Staking", icon: FiTrendingUp, url: "./staking" },
+  { name: "Admin", icon: FiTrendingUp, url: "./admin" },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {
