@@ -1,4 +1,4 @@
-export const ChainlinkEthUsdAddress = "0xc981ec845488b8479539e6B22dc808Fb824dB00a"
+export const ChainlinkEthUsdAddress = "0x64f5219563e28EeBAAd91Ca8D31fa3b36621FD4f"
 
 export const ChainlinkEthUsdAbi = [
   {

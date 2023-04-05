@@ -5,6 +5,7 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./ArkaERC20.sol";
+import "./ChainlinkEthUsd.sol";
 import "hardhat/console.sol";
 
 /**
@@ -15,7 +16,13 @@ import "hardhat/console.sol";
 contract ArkaMaster is Ownable {
     ArkaERC20 public immutable arkaToken;
 
-    // TODO: make a DAO to allow setting proposal's price and rewards.
+    // Price of ETH in USD from Chainlink.
+    ChainlinkEthUsd public priceFeedEthUsd;
+
+    /**
+     * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
+     */
+    uint usdPrice7days = 10; // Initial price. May change in the future with a DAO to set this price.
 
     /**
      * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
@@ -58,10 +65,14 @@ contract ArkaMaster is Ownable {
     event Interaction(uint idResource, address user, InteractType interaction);
     event ResourceProposed(string description, string url, uint endDate);
 
-    constructor(address _arkaToken) {
+    constructor(address _arkaToken, address _priceFeedEthUsd) {
         arkaToken = ArkaERC20(_arkaToken);
+        priceFeedEthUsd = ChainlinkEthUsd(_priceFeedEthUsd);
     }
 
+    /**
+     * @notice Get the interaction on a resource for a user, if any.
+     */
     function getInteraction(
         uint _idResource,
         address _user
@@ -90,6 +101,20 @@ contract ArkaMaster is Ownable {
     }
 
     /**
+     * @notice Get the price of a proposal in Wei.
+     */
+    function getPriceForProposalInWei() public view returns (uint) {
+        require(
+            priceFeedEthUsd.getLatestPrice() > 0,
+            "Price feed is not available"
+        );
+
+        return
+            (1 ether * usdPrice7days) /
+            uint(priceFeedEthUsd.getLatestPrice() / 1e8);
+    }
+
+    /**
      * A user can propose a resource to be added to the platform.
      *
      * @param _description The description to be added in the UI.
@@ -101,7 +126,7 @@ contract ArkaMaster is Ownable {
     ) external payable {
         console.log("dans ProposeResource", _description, msg.value);
         require(
-            msg.value >= etherPrice7days,
+            msg.value >= getPriceForProposalInWei(),
             "You need to pay the price of 7 days of hosting"
         );
 

@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0x0724F18B2aA7D6413D3fDcF6c0c27458a8170Dd9"
+export const ArkaMasterContractAddress = "0x6484EB0792c646A4827638Fc1B6F20461418eB00"
 
 export const ArkaMasterContractAbi = [
   {
@@ -6,6 +6,11 @@ export const ArkaMasterContractAbi = [
       {
         internalType: "address",
         name: "_arkaToken",
+        type: "address",
+      },
+      {
+        internalType: "address",
+        name: "_priceFeedEthUsd",
         type: "address",
       },
     ],
@@ -119,6 +124,19 @@ export const ArkaMasterContractAbi = [
     type: "function",
   },
   {
+    inputs: [],
+    name: "getPriceForProposalInWei",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
     inputs: [
       {
         internalType: "uint256",
@@ -166,6 +184,19 @@ export const ArkaMasterContractAbi = [
     outputs: [
       {
         internalType: "address",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "priceFeedEthUsd",
+    outputs: [
+      {
+        internalType: "contract ChainlinkEthUsd",
         name: "",
         type: "address",
       },
