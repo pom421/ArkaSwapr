@@ -1,17 +1,17 @@
 import Layout from "@/components/Layout"
-import { useConnectedUser } from "@/hooks/useConnectedUser"
 import styles from "@/styles/Home.module.css"
 import { Box, Container, Heading, Icon, Stack, Text, createIcon, useColorModeValue } from "@chakra-ui/react"
 import { ConnectButton } from "@rainbow-me/rainbowkit"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { ReactElement } from "react"
+import { useAccount } from "wagmi"
 
 export default function Home() {
-  const userAddress = useConnectedUser()
+  const { address } = useAccount()
   const router = useRouter()
 
-  if (userAddress) {
+  if (address) {
     router.push("/explore")
   }
 

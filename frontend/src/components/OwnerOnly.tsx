@@ -4,7 +4,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { PropsWithChildren } from "react"
 
 type Props = PropsWithChildren & {
-  userAddress: string | null
+  userAddress?: string
 }
 
 export const OwnerOnly = ({ userAddress, children }: Props) => {

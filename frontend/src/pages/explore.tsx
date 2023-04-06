@@ -1,17 +1,17 @@
 import { ConnectedUserOnly } from "@/components/ConnectedUserOnly"
 import { Explore } from "@/components/Explore"
 import Layout from "@/components/Layout"
-import { useConnectedUser } from "@/hooks/useConnectedUser"
 import { ReactElement } from "react"
+import { useAccount } from "wagmi"
 
 export default function ExplorePage() {
-  const userAddress = useConnectedUser()
+  const { address } = useAccount()
 
   return (
     <main>
-      <ConnectedUserOnly userAddress={userAddress}>
+      <ConnectedUserOnly userAddress={address}>
         {/* In ConnectedUserOnly, userAddress can't be null so ! is allowed here. */}
-        <Explore userAddress={userAddress!} />
+        <Explore userAddress={address!} />
       </ConnectedUserOnly>
     </main>
   )
