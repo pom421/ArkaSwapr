@@ -6,6 +6,7 @@ import {
   AlertDescription,
   AlertIcon,
   AlertTitle,
+  Box,
   Button,
   Container,
   Flex,
@@ -18,17 +19,18 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { FormEvent, useState } from "react"
+import { parseEther } from "ethers/lib/utils.js"
+import { FormEvent, useEffect, useState } from "react"
 import { useBalance } from "wagmi"
 
 type FormProps = {
-  globalAmount?: string
+  rewardAmount?: string
 }
 
 export const Admin = () => {
   const [parent] = useAutoAnimate()
-  const [errors, setErrors] = useState<FormProps>({})
-  const [globalAmount, setGlobalAmount] = useState("")
+  const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
+  const [rewardAmount, setRewardAmount] = useState("")
 
   const {
     data: balanceData,
@@ -39,16 +41,21 @@ export const Admin = () => {
     watch: true,
   })
 
+  useEffect(() => {
+    if (isError) setErrors({ globalError: "Erreur lors de la récupération du solde" })
+  }, [isError])
+
   const color = useColorModeValue("blue.500", "cyan.500")
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    if (globalAmount === "") return setErrors({ globalAmount: "Veuillez renseigner un montant" })
-
-    if (balanceData?.value.toNumber() === 0) return setErrors({ globalAmount: "Pas de fonds disponibles" })
-
-    console.log("dans submit")
+    if (isNaN(Number(rewardAmount))) return setErrors({ rewardAmount: "Veuillez renseigner un montant valide" })
+    if (balanceData?.value === undefined) return setErrors({ globalError: "Erreur lors de la récupération du solde" })
+    if (rewardAmount === "") return setErrors({ rewardAmount: "Veuillez renseigner un montant" })
+    if (balanceData?.value.isZero()) return setErrors({ rewardAmount: "Pas de fonds disponibles" })
+    if (parseEther(rewardAmount).gt(parseEther(balanceData.formatted)))
+      return setErrors({ rewardAmount: "Montant trop élevé" })
   }
 
   return (
@@ -64,13 +71,17 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
-          {isError && (
-            <Alert status="warning">
-              <AlertTitle>Erreur</AlertTitle>
-              <AlertIcon />
-              <AlertDescription>Une erreur est survenue.</AlertDescription>
-            </Alert>
-          )}
+          <div ref={parent}>
+            {errors.globalError && (
+              <Alert status="warning">
+                <AlertIcon />
+                <Box>
+                  <AlertTitle>Erreur</AlertTitle>
+                  <AlertDescription>{errors.globalError}</AlertDescription>
+                </Box>
+              </Alert>
+            )}
+          </div>
 
           <Text fontSize="lg">
             ETH disponible
@@ -79,30 +90,20 @@ export const Admin = () => {
             </Text>
           </Text>
 
-          <div ref={parent}>
-            {hasErrors(errors) && (
-              <Alert status="warning">
-                <AlertTitle>Erreur</AlertTitle>
-                <AlertIcon />
-                <AlertDescription>{errors.globalAmount}</AlertDescription>
-              </Alert>
-            )}
-          </div>
-
           <form onSubmit={handleSubmit}>
             <Flex direction="row" gap="4">
-              <FormControl isInvalid={Boolean(errors?.globalAmount)}>
+              <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
                 <FormLabel>Montant</FormLabel>
                 <Input
-                  name="globalAmount"
+                  name="rewardAmount"
                   placeholder="Amount"
-                  value={globalAmount}
+                  value={rewardAmount}
                   onChange={(e) => {
                     setErrors({})
-                    setGlobalAmount(e.target.value)
+                    setRewardAmount(e.target.value.replaceAll(",", "."))
                   }}
                 />
-                <FormErrorMessage>{errors?.globalAmount}</FormErrorMessage>
+                <FormErrorMessage>{errors?.rewardAmount}</FormErrorMessage>
               </FormControl>
               <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
                 Démarrer
