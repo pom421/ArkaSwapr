@@ -3,28 +3,21 @@ import { useArkaMaster, useArkaMasterGetInteraction } from "@/generated"
 import { CheckIcon, DeleteIcon } from "@chakra-ui/icons"
 import { Button, ButtonGroup, Flex, IconButton, Td, Text, Tr, useToast } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { BigNumber } from "ethers"
+import { BigNumber, ethers } from "ethers"
 import { getAddress } from "ethers/lib/utils.js"
 import { useState } from "react"
 import { FiHeart, FiThumbsDown, FiThumbsUp } from "react-icons/fi"
-import { useSigner } from "wagmi"
+import { useAccount, useSigner } from "wagmi"
 import { EndDate } from "./EndDate"
 
-export const RowResource = ({
-  resource,
-  index,
-  userAddress,
-}: {
-  resource: Resource
-  index: number
-  userAddress: string
-}) => {
+export const RowResource = ({ resource, index }: { resource: Resource; index: number }) => {
   const [parent] = useAutoAnimate()
+  const { address } = useAccount()
   const toast = useToast()
   const [isVisited, setIsVisited] = useState(false)
 
   const { data: interaction } = useArkaMasterGetInteraction({
-    args: [BigNumber.from(index), getAddress(userAddress)],
+    args: [BigNumber.from(index), getAddress(address || ethers.constants.AddressZero)],
     watch: true,
   })
 

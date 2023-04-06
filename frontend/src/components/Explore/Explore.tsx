@@ -51,7 +51,7 @@ export const Explore = () => {
                   </Thead>
                   <Tbody>
                     {resources?.map((resource, index) => (
-                      <RowResource key={index} resource={resource} index={index} userAddress={address} />
+                      <RowResource key={index} resource={resource} index={index} />
                     ))}
                   </Tbody>
                 </Table>
