@@ -2,18 +2,16 @@ import { useArkaMasterOwner } from "@/generated"
 import { Alert, AlertDescription, AlertIcon, AlertTitle, Container } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { PropsWithChildren } from "react"
+import { useAccount } from "wagmi"
 
-type Props = PropsWithChildren & {
-  userAddress?: string
-}
-
-export const OwnerOnly = ({ userAddress, children }: Props) => {
+export const OwnerOnly = ({ children }: PropsWithChildren) => {
   const [parent] = useAutoAnimate()
+  const { address } = useAccount()
   const owner = useArkaMasterOwner()
 
   return (
     <div ref={parent}>
-      {userAddress !== owner.data ? (
+      {address !== owner.data ? (
         <main>
           <Container maxW={"4xl"} mt="16">
             <Alert

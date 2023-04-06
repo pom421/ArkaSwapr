@@ -1,18 +1,18 @@
-import { Admin } from "@/components/Admin/Admin"
 import Layout from "@/components/Layout"
 import { OwnerOnly } from "@/components/OwnerOnly"
+import { Staking } from "@/components/Staking"
 import { ReactElement } from "react"
 
-export default function AdminPage() {
+export default function StakingPage() {
   return (
     <main>
       <OwnerOnly>
-        <Admin />
+        <Staking />
       </OwnerOnly>
     </main>
   )
 }
 
-AdminPage.getLayout = function getLayout(page: ReactElement) {
+StakingPage.getLayout = function getLayout(page: ReactElement) {
   return <Layout>{page}</Layout>
 }

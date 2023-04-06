@@ -14,14 +14,13 @@ import {
   Tr,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
+import { useAccount } from "wagmi"
 import { RowResource } from "./RowResource"
 
-type Props = {
-  userAddress: string
-}
-
-export const Explore = ({ userAddress }: Props) => {
+export const Explore = () => {
   const [parent] = useAutoAnimate()
+  const { address } = useAccount()
+
   const resources = useResourcesFromEvent()
 
   return (
@@ -35,7 +34,7 @@ export const Explore = ({ userAddress }: Props) => {
           <Text fontSize="lg">Regarde un site et donne ton avis. 2 ARKA de récompenses à chaque interaction.</Text>
 
           <div ref={parent}>
-            {!userAddress ? (
+            {!address ? (
               <Alert status="warning">
                 <AlertIcon />
                 Veuillez vous connecter pour pouvoir interagir avec les ressources.
@@ -52,7 +51,7 @@ export const Explore = ({ userAddress }: Props) => {
                   </Thead>
                   <Tbody>
                     {resources?.map((resource, index) => (
-                      <RowResource key={index} resource={resource} index={index} userAddress={userAddress} />
+                      <RowResource key={index} resource={resource} index={index} userAddress={address} />
                     ))}
                   </Tbody>
                 </Table>

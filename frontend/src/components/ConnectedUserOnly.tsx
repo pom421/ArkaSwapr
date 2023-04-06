@@ -1,17 +1,15 @@
 import { Alert, AlertIcon } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { PropsWithChildren } from "react"
+import { useAccount } from "wagmi"
 
-type Props = PropsWithChildren & {
-  userAddress?: string
-}
-
-export const ConnectedUserOnly = ({ userAddress, children }: Props) => {
+export const ConnectedUserOnly = ({ children }: PropsWithChildren) => {
+  const { address } = useAccount()
   const [parent] = useAutoAnimate()
 
   return (
     <div ref={parent}>
-      {!userAddress ? (
+      {!address ? (
         <Alert status="warning">
           <AlertIcon />
           Veuillez vous connecter pour pouvoir interagir avec les ressources.
