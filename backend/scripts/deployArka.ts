@@ -1,22 +1,22 @@
 import { ethers } from "hardhat";
 
 // Addresses ETH / USD for Chainlink.
-const addressChainlinkMainnet = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419";
-const addressChainlinkSepolia = "0x694AA1769357215DE4FAC081bf1f309aDC325306";
+//const CHAIN_LINK_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419" // Mainnet
+const CHAIN_LINK_ADDRESS = "0x694AA1769357215DE4FAC081bf1f309aDC325306"; // Sepolia
 
 async function signerInfo() {
-  const [deployer] = await ethers.getSigners();
+  const [owner] = await ethers.getSigners();
 
-  console.log("Deploying contracts with the account:", deployer.address);
+  console.log("Deploying contracts with the account:", owner.address);
 
-  const weiAmount = (await deployer.getBalance()).toString();
+  const weiAmount = (await owner.getBalance()).toString();
 
   console.log("Account balance:", await ethers.utils.formatEther(weiAmount));
 }
 
 async function deployOracle() {
   const Oracle = await ethers.getContractFactory("ChainlinkEthUsd");
-  const oracle = await Oracle.deploy(addressChainlinkMainnet);
+  const oracle = await Oracle.deploy(CHAIN_LINK_ADDRESS);
   await oracle.deployed();
 
   console.log(`Oracle deployed to ${oracle.address}`);
@@ -54,7 +54,6 @@ async function main() {
 
   await arkaERC20.setArkaMaster(arkaMaster.address);
 
-  // (${ethers.utils.getAddress(arkaERC20.address)})
 }
 
 // We recommend this pattern to be able to use async/await everywhere
