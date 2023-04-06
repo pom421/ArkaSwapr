@@ -4,17 +4,17 @@ import "@rainbow-me/rainbowkit/styles.css"
 import { title } from "@/utils/constants"
 import { ChakraProvider } from "@chakra-ui/react"
 import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit"
-import { alchemyProvider } from "@wagmi/core/providers/alchemy"
 import { NextPage } from "next"
 import type { AppProps } from "next/app"
 import { ReactElement, ReactNode } from "react"
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi"
 import { hardhat, mainnet, sepolia } from "wagmi/chains"
+import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
 
-const { chains, provider, webSocketProvider } = configureChains(
+const { chains, provider } = configureChains(
   [hardhat, mainnet, goerli, sepolia],
-  [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID || "" }), publicProvider()],
+  [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_ID || "" }), publicProvider()],
 )
 
 const { connectors } = getDefaultWallets({
@@ -26,7 +26,6 @@ const wagmiClient = createClient({
   autoConnect: true,
   connectors,
   provider,
-  webSocketProvider,
 })
 
 export type NextPageWithLayout<P = Record<string, never>, IP = P> = NextPage<P, IP> & {
