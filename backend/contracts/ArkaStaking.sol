@@ -4,6 +4,7 @@ pragma solidity ^0.8.18;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "hardhat/console.sol";
 
 /**
  * @title ArkaStaking
@@ -69,6 +70,8 @@ contract ArkaStaking is Ownable {
      * @notice Also, it updates the rewardPerToken and updatedAt variables.
      */
     modifier updateReward(address _account) {
+        console.log("dans updateReward");
+
         rewardPerToken = _calculateRewardPerToken();
         updatedAt = _lastTimeRewardApplicable();
 
@@ -125,6 +128,8 @@ contract ArkaStaking is Ownable {
 
     // deposit
     function deposit(uint _amount) external updateReward(msg.sender) {
+        console.log("dans deposit", msg.sender, _amount);
+
         require(_amount > 0, "amount = 0");
         arkaToken.transferFrom(msg.sender, address(this), _amount);
         stakeBalanceOf[msg.sender] += _amount;

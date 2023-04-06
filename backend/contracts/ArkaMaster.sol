@@ -147,23 +147,23 @@ contract ArkaMaster is Ownable {
     /**
      * @notice Start a stake contract, if no stake is running.
      *
-     * @param amountReward Amount of ETH to be sent to the new stake contract
+     * @param _amountReward Amount of ETH to be sent to the new stake contract
      */
-    function startNewStake(uint amountReward) external onlyOwner {
-        console.log("startNewStake", amountReward);
+    function startNewStake(uint _amountReward) external onlyOwner {
+        console.log("startNewStake", _amountReward);
         require(
             address(currentStake) == address(0),
             "A stake is already running"
         );
 
-        require(amountReward > 0, "Amount must be > 0");
-        require(amountReward < address(this).balance, "Not enough funds");
+        require(_amountReward > 0, "Amount must be > 0");
+        require(_amountReward < address(this).balance, "Not enough funds");
 
-        currentStake = (new ArkaStaking){value: amountReward}(
+        currentStake = (new ArkaStaking){value: _amountReward}(
             address(arkaToken)
         );
 
-        emit NewStake(amountReward);
+        emit NewStake(_amountReward);
     }
 
     /**

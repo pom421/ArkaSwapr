@@ -1,5 +1,11 @@
 import { ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
-import { useArkaMasterCurrentStake, useArkaMasterStartNewStake, usePrepareArkaMasterStartNewStake } from "@/generated"
+import {
+  useArkaMasterCurrentStake,
+  useArkaMasterEndCurrentStake,
+  useArkaMasterStartNewStake,
+  usePrepareArkaMasterEndCurrentStake,
+  usePrepareArkaMasterStartNewStake,
+} from "@/generated"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
@@ -23,7 +29,7 @@ import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { ethers } from "ethers"
 import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
-import { useBalance } from "wagmi"
+import { useBalance, useWaitForTransaction } from "wagmi"
 
 type FormProps = {
   rewardAmount?: string
@@ -44,11 +50,33 @@ export const Admin = () => {
     watch: true,
   })
 
-  const { config } = usePrepareArkaMasterStartNewStake({
+  const { config: configNewStake } = usePrepareArkaMasterStartNewStake({
     args: [parseEther(rewardAmount || "0")],
   })
+  const {
+    data: dataNewStake,
+    isLoading: isLoadingNewStake,
+    isError: isErrorNewStake,
+    error: errorNewStake,
+    write: writeNewStake,
+  } = useArkaMasterStartNewStake(configNewStake)
 
-  const { isLoading: isLoadingNewStake, isError: isErrorNewStake, write } = useArkaMasterStartNewStake(config)
+  const { isLoading: isLoadingTxNewStake, isSuccess: isSuccessTxNewStake } = useWaitForTransaction({
+    hash: dataNewStake?.hash,
+  })
+
+  const { config: configEndStake } = usePrepareArkaMasterEndCurrentStake()
+  const {
+    data: dataEndStake,
+    isLoading: isLoadingEndStake,
+    isError: isErrorEndStake,
+    error: errorEndStake,
+    write: writeEndStake,
+  } = useArkaMasterEndCurrentStake(configEndStake)
+
+  const { isLoading: isLoadingTxEndStake, isSuccess: isSuccessTxEndStake } = useWaitForTransaction({
+    hash: dataEndStake?.hash,
+  })
 
   const { data: addressCurrentStake } = useArkaMasterCurrentStake({
     watch: true,
@@ -57,7 +85,15 @@ export const Admin = () => {
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
     if (isErrorNewStake) setErrors({ globalError: "Erreur lors de la création du contrat de staking" })
-  }, [isErrorBalance, isErrorNewStake])
+    if (isErrorNewStake)
+      setErrors({
+        globalError: errorNewStake?.message || "Erreur lors de la création du contrat de staking",
+      })
+    if (isErrorEndStake)
+      setErrors({
+        globalError: errorEndStake?.message || "Erreur lors de la fermeture du contrat de staking",
+      })
+  }, [errorEndStake?.message, errorNewStake?.message, isErrorBalance, isErrorEndStake, isErrorNewStake])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -70,7 +106,7 @@ export const Admin = () => {
       return setErrors({ rewardAmount: "Montant trop élevé" })
 
     try {
-      write?.()
+      writeNewStake?.()
     } catch (error: unknown) {
       console.error("Error while writing to contract", error)
       if (error instanceof Error) setErrors({ globalError: "Erreur lors de la création du contrat de staking 😣" })
@@ -90,6 +126,15 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
+          {(isSuccessTxNewStake || isSuccessTxNewStake) && (
+            <Alert status="success">
+              <AlertIcon />
+              <Box>
+                <AlertTitle>{isSuccessTxNewStake ? "Stake créé" : "Stake terminé"}</AlertTitle>
+              </Box>
+            </Alert>
+          )}
+
           {errors.globalError && (
             <Alert status="warning">
               <AlertIcon />
@@ -108,7 +153,18 @@ export const Admin = () => {
           </Text>
 
           {addressCurrentStake !== ethers.constants.AddressZero ? (
-            <Text fontSize="lg">Vous avez déjà un stake en cours.</Text>
+            <>
+              <Text fontSize="lg">Vous avez déjà un stake en cours.</Text>
+              <Button
+                mt="8"
+                type="submit"
+                size="lg"
+                disabled={isLoadingEndStake || isLoadingTxEndStake}
+                onClick={writeEndStake}
+              >
+                Terminer le stake
+              </Button>
+            </>
           ) : (
             <form onSubmit={handleSubmit}>
               <Flex direction="row" gap="4">
@@ -129,7 +185,11 @@ export const Admin = () => {
                   mt="8"
                   type="submit"
                   size="lg"
-                  disabled={isLoadingBalance || isLoadingNewStake || hasErrors(errors)}
+                  disabled={
+                    isLoadingBalance ||
+                    isLoadingNewStake ||
+                    hasErrors(errors || isLoadingNewStake || isLoadingTxNewStake)
+                  }
                 >
                   Démarrer
                 </Button>

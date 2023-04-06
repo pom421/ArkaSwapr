@@ -26,7 +26,7 @@ export const ArkaStakingAbi = [
         type: "uint256",
       },
     ],
-    name: "NewStake",
+    name: "Deposit",
     type: "event",
   },
   {
@@ -57,27 +57,14 @@ export const ArkaStakingAbi = [
         name: "user",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "reward",
-        type: "uint256",
-      },
     ],
-    name: "RewardPaid",
+    name: "RewardClaimed",
     type: "event",
   },
   {
     anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "newDuration",
-        type: "uint256",
-      },
-    ],
-    name: "RewardsDurationUpdated",
+    inputs: [],
+    name: "TransferUnclaimedReward",
     type: "event",
   },
   {
@@ -89,33 +76,8 @@ export const ArkaStakingAbi = [
         name: "user",
         type: "address",
       },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
     ],
-    name: "StakeInitiated",
-    type: "event",
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: "address",
-        name: "user",
-        type: "address",
-      },
-      {
-        indexed: false,
-        internalType: "uint256",
-        name: "amount",
-        type: "uint256",
-      },
-    ],
-    name: "StakeWithdrawn",
+    name: "Withdraw",
     type: "event",
   },
   {
