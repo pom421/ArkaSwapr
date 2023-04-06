@@ -5,6 +5,7 @@ pragma solidity ^0.8.18;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "./ArkaERC20.sol";
+import "./ArkaStaking.sol";
 import "./ChainlinkEthUsd.sol";
 import "hardhat/console.sol";
 
@@ -18,6 +19,11 @@ contract ArkaMaster is Ownable {
 
     // Price of ETH in USD from Chainlink.
     ChainlinkEthUsd public priceFeedEthUsd;
+
+    /**
+     * @notice The current stake contract.
+     */
+    ArkaStaking public currentStake;
 
     /**
      * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
@@ -134,5 +140,44 @@ contract ArkaMaster is Ownable {
         resources.push(Resource(_description, _url, block.timestamp + 7 days));
 
         emit ResourceProposed(_description, _url, block.timestamp + 7 days);
+    }
+
+    /**
+     * @notice Start a stake contract, if no stake is running.
+     *
+     * @param amountReward Amount of ETH to be sent to the new stake contract
+     */
+    function startNewStake(uint amountReward) external onlyOwner {
+        console.log("startNewStake", amountReward);
+        require(
+            address(currentStake) == address(0),
+            "A stake is already running"
+        );
+
+        require(amountReward > 0, "Amount must be > 0");
+        require(amountReward < address(this).balance, "Not enough funds");
+
+        currentStake = (new ArkaStaking){value: amountReward}(
+            address(arkaToken)
+        );
+    }
+
+    /**
+     * @notice End the current stake contract, if any.
+     */
+    function endCurrentStake() external onlyOwner {
+        require(address(currentStake) != address(0), "No stake is running");
+        // require(
+        //     currentStake.finishAt() < block.timestamp,
+        //     "Stake is not finished"
+        // );
+
+        // require(
+        //     address(currentStake).balance == 0,
+        //     "You can't end a stake because reward is not fully distributed. Inform your user or get back the reward"
+        // );
+
+        currentStake.transferUnclaimedReward();
+        currentStake = ArkaStaking(address(0));
     }
 }

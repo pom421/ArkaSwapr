@@ -47,7 +47,7 @@ contract ArkaStaking is Ownable {
     constructor(address _stakingToken) payable {
         arkaToken = IERC20(_stakingToken);
 
-        duration = 7 days;
+        duration = 10 minutes;
 
         // Set the amount of reward to be paid out.
         amountReward = msg.value;
@@ -70,8 +70,8 @@ contract ArkaStaking is Ownable {
      * @notice Also, it updates the rewardPerToken and updatedAt variables.
      */
     modifier updateReward(address _account) {
-        rewardPerToken = calculateRewardPerToken();
-        updatedAt = lastTimeRewardApplicable();
+        rewardPerToken = _calculateRewardPerToken();
+        updatedAt = _lastTimeRewardApplicable();
 
         if (_account != address(0)) {
             rewards[_account] = calculateRewardForAccount(_account);
@@ -86,8 +86,25 @@ contract ArkaStaking is Ownable {
      * This is used to calculate the reward per token in defining period where total supply is constant.
      * @notice This function is used to get the current time or finishAt at last.
      */
-    function lastTimeRewardApplicable() public view returns (uint) {
+    function _lastTimeRewardApplicable() private view returns (uint) {
         return finishAt <= block.timestamp ? finishAt : block.timestamp;
+    }
+
+    /**
+     * @dev Function to calculate the reward per token for the current period. Global for all user at a given time.
+     * @notice This function is used to calculate the reward per token for the current period.
+     *
+     * @return The reward per token for the current period.
+     */
+    function _calculateRewardPerToken() private view returns (uint) {
+        if (totalSupply == 0) {
+            return 0;
+        }
+
+        return
+            rewardPerToken +
+            (rewardRate * (_lastTimeRewardApplicable() - updatedAt) * 1e18) /
+            totalSupply;
     }
 
     /**
@@ -103,25 +120,8 @@ contract ArkaStaking is Ownable {
         return
             rewards[_account] +
             ((stakeBalanceOf[_account] *
-                (calculateRewardPerToken() -
+                (_calculateRewardPerToken() -
                     userRewardPerTokenPaid[_account])) / 1e18);
-    }
-
-    /**
-     * @dev Function to calculate the reward per token for the current period. Global for all user at a given time.
-     * @notice This function is used to calculate the reward per token for the current period.
-     *
-     * @return The reward per token for the current period.
-     */
-    function calculateRewardPerToken() public view returns (uint) {
-        if (totalSupply == 0) {
-            return 0;
-        }
-
-        return
-            rewardPerToken +
-            (rewardRate * (lastTimeRewardApplicable() - updatedAt) * 1e18) /
-            totalSupply;
     }
 
     // deposit
@@ -148,5 +148,14 @@ contract ArkaStaking is Ownable {
             require(sent, "Failed to send Ether");
             rewards[msg.sender] = 0;
         }
+    }
+
+    /**
+     * @dev Function to transfer the unclaimed rewards to the master contract and not lose tokens.
+     */
+    function transferUnclaimedReward() external onlyOwner {
+        require(block.timestamp > finishAt, "not finished yet");
+        (bool sent, ) = owner().call{value: address(this).balance}("");
+        require(sent, "Failed to send Ether");
     }
 }

@@ -1,4 +1,5 @@
 import { ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
+import { useArkaMasterCurrentStake, useArkaMasterStartNewStake, usePrepareArkaMasterStartNewStake } from "@/generated"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
@@ -19,6 +20,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
+import { ethers } from "ethers"
 import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useBalance } from "wagmi"
@@ -31,21 +33,31 @@ export const Admin = () => {
   const [parent] = useAutoAnimate()
   const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
   const [rewardAmount, setRewardAmount] = useState("")
+  const color = useColorModeValue("blue.500", "cyan.500")
 
   const {
     data: balanceData,
-    isError,
-    isLoading,
+    isError: isErrorBalance,
+    isLoading: isLoadingBalance,
   } = useBalance({
     address: ArkaMasterContractAddress,
     watch: true,
   })
 
-  useEffect(() => {
-    if (isError) setErrors({ globalError: "Erreur lors de la récupération du solde" })
-  }, [isError])
+  const { config } = usePrepareArkaMasterStartNewStake({
+    args: [parseEther(rewardAmount || "0")],
+  })
 
-  const color = useColorModeValue("blue.500", "cyan.500")
+  const { isLoading: isLoadingNewStake, isError: isErrorNewStake, write } = useArkaMasterStartNewStake(config)
+
+  const { data: addressCurrentStake } = useArkaMasterCurrentStake({
+    watch: true,
+  })
+
+  useEffect(() => {
+    if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
+    if (isErrorNewStake) setErrors({ globalError: "Erreur lors de la création du contrat de staking" })
+  }, [isErrorBalance, isErrorNewStake])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -56,12 +68,19 @@ export const Admin = () => {
     if (balanceData?.value.isZero()) return setErrors({ rewardAmount: "Pas de fonds disponibles" })
     if (parseEther(rewardAmount).gt(parseEther(balanceData.formatted)))
       return setErrors({ rewardAmount: "Montant trop élevé" })
+
+    try {
+      write?.()
+    } catch (error: unknown) {
+      console.error("Error while writing to contract", error)
+      if (error instanceof Error) setErrors({ globalError: "Erreur lors de la création du contrat de staking 😣" })
+    }
   }
 
   return (
     <main>
       <Container maxW={"4xl"}>
-        <Flex direction="column" gap="8">
+        <Flex direction="column" gap="8" ref={parent}>
           <Heading as="h1" mt="8">
             Admin
           </Heading>
@@ -71,17 +90,15 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
-          <div ref={parent}>
-            {errors.globalError && (
-              <Alert status="warning">
-                <AlertIcon />
-                <Box>
-                  <AlertTitle>Erreur</AlertTitle>
-                  <AlertDescription>{errors.globalError}</AlertDescription>
-                </Box>
-              </Alert>
-            )}
-          </div>
+          {errors.globalError && (
+            <Alert status="warning">
+              <AlertIcon />
+              <Box>
+                <AlertTitle>Erreur</AlertTitle>
+                <AlertDescription>{errors.globalError}</AlertDescription>
+              </Box>
+            </Alert>
+          )}
 
           <Text fontSize="lg">
             ETH disponible
@@ -90,26 +107,35 @@ export const Admin = () => {
             </Text>
           </Text>
 
-          <form onSubmit={handleSubmit}>
-            <Flex direction="row" gap="4">
-              <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
-                <FormLabel>Montant</FormLabel>
-                <Input
-                  name="rewardAmount"
-                  placeholder="Amount"
-                  value={rewardAmount}
-                  onChange={(e) => {
-                    setErrors({})
-                    setRewardAmount(e.target.value.replaceAll(",", "."))
-                  }}
-                />
-                <FormErrorMessage>{errors?.rewardAmount}</FormErrorMessage>
-              </FormControl>
-              <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
-                Démarrer
-              </Button>
-            </Flex>
-          </form>
+          {addressCurrentStake !== ethers.constants.AddressZero ? (
+            <Text fontSize="lg">Vous avez déjà un stake en cours.</Text>
+          ) : (
+            <form onSubmit={handleSubmit}>
+              <Flex direction="row" gap="4">
+                <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
+                  <FormLabel>Montant</FormLabel>
+                  <Input
+                    name="rewardAmount"
+                    placeholder="Amount"
+                    value={rewardAmount}
+                    onChange={(e) => {
+                      setErrors({})
+                      setRewardAmount(e.target.value.replaceAll(",", "."))
+                    }}
+                  />
+                  <FormErrorMessage>{errors?.rewardAmount}</FormErrorMessage>
+                </FormControl>
+                <Button
+                  mt="8"
+                  type="submit"
+                  size="lg"
+                  disabled={isLoadingBalance || isLoadingNewStake || hasErrors(errors)}
+                >
+                  Démarrer
+                </Button>
+              </Flex>
+            </form>
+          )}
         </Flex>
       </Container>
     </main>

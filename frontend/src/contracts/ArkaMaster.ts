@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0xE7FF84Df24A9a252B6E8A5BB093aC52B1d8bEEdf"
+export const ArkaMasterContractAddress = "0xb04CB6c52E73CF3e2753776030CE85a36549c9C2"
 
 export const ArkaMasterContractAbi = [
   {
@@ -97,6 +97,26 @@ export const ArkaMasterContractAbi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "currentStake",
+    outputs: [
+      {
+        internalType: "contract ArkaStaking",
+        name: "",
+        type: "address",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "endCurrentStake",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
@@ -256,6 +276,19 @@ export const ArkaMasterContractAbi = [
       },
     ],
     stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "amountReward",
+        type: "uint256",
+      },
+    ],
+    name: "startNewStake",
+    outputs: [],
+    stateMutability: "nonpayable",
     type: "function",
   },
   {
