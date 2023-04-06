@@ -2,26 +2,24 @@ import { ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
-    Alert,
-    AlertDescription,
-    AlertIcon,
-    AlertTitle,
-    Button,
-    Container,
-    Flex,
-    FormControl,
-    FormErrorMessage,
-    FormLabel,
-    Heading,
-    Input,
-    Text,
-    useColorModeValue,
+  Alert,
+  AlertDescription,
+  AlertIcon,
+  AlertTitle,
+  Button,
+  Container,
+  Flex,
+  FormControl,
+  FormErrorMessage,
+  FormLabel,
+  Heading,
+  Input,
+  Text,
+  useColorModeValue,
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { BigNumber } from "ethers"
-import { formatEther } from "ethers/lib/utils.js"
-import { FormEvent, useEffect, useState } from "react"
-import { useProvider } from "wagmi"
+import { FormEvent, useState } from "react"
+import { useBalance } from "wagmi"
 
 type FormProps = {
   globalAmount?: string
@@ -29,29 +27,26 @@ type FormProps = {
 
 export const Admin = () => {
   const [parent] = useAutoAnimate()
-  const provider = useProvider()
   const [errors, setErrors] = useState<FormProps>({})
   const [globalAmount, setGlobalAmount] = useState("")
-  const [balanceArkaMaster, setBalanceArkaMaster] = useState<BigNumber>()
+
+  const {
+    data: balanceData,
+    isError,
+    isLoading,
+  } = useBalance({
+    address: ArkaMasterContractAddress,
+    watch: true,
+  })
+
   const color = useColorModeValue("blue.500", "cyan.500")
-
-  const balanceInEther = formatEther(balanceArkaMaster || "0")
-
-  const isLoading = false
-
-  useEffect(() => {
-    const run = async () => {
-      setBalanceArkaMaster(await provider.getBalance(ArkaMasterContractAddress))
-    }
-    run()
-  }, [provider])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     if (globalAmount === "") return setErrors({ globalAmount: "Veuillez renseigner un montant" })
 
-    if (Number(balanceInEther) === 0) return setErrors({ globalAmount: "Pas de fonds disponibles" })
+    if (balanceData?.value.toNumber() === 0) return setErrors({ globalAmount: "Pas de fonds disponibles" })
 
     console.log("dans submit")
   }
@@ -69,10 +64,18 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
+          {isError && (
+            <Alert status="warning">
+              <AlertTitle>Erreur</AlertTitle>
+              <AlertIcon />
+              <AlertDescription>Une erreur est survenue.</AlertDescription>
+            </Alert>
+          )}
+
           <Text fontSize="lg">
             ETH disponible
             <Text as="span" color={color} ml="4">
-              {balanceInEther}
+              {balanceData?.formatted}
             </Text>
           </Text>
 
