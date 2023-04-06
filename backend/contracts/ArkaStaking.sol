@@ -38,11 +38,10 @@ contract ArkaStaking is Ownable {
     // User address => staked amount
     mapping(address => uint) public stakeBalanceOf;
 
-    event StakeInitiated(address indexed user, uint amount);
-    event StakeWithdrawn(address indexed user, uint amount);
-    event RewardPaid(address indexed user, uint reward);
-    event RewardsDurationUpdated(uint newDuration);
-    event NewStake(address indexed user, uint amount);
+    event Deposit(address indexed user, uint amount);
+    event Withdraw(address indexed user);
+    event RewardClaimed(address indexed user);
+    event TransferUnclaimedReward();
 
     constructor(address _stakingToken) payable {
         arkaToken = IERC20(_stakingToken);
@@ -130,6 +129,8 @@ contract ArkaStaking is Ownable {
         arkaToken.transferFrom(msg.sender, address(this), _amount);
         stakeBalanceOf[msg.sender] += _amount;
         totalSupply += _amount;
+
+        emit Deposit(msg.sender, _amount);
     }
 
     // withdraw
@@ -137,6 +138,8 @@ contract ArkaStaking is Ownable {
         arkaToken.transfer(msg.sender, stakeBalanceOf[msg.sender]);
         totalSupply -= stakeBalanceOf[msg.sender];
         stakeBalanceOf[msg.sender] = 0;
+
+        emit Withdraw(msg.sender);
     }
 
     // claimReward
@@ -148,6 +151,8 @@ contract ArkaStaking is Ownable {
             require(sent, "Failed to send Ether");
             rewards[msg.sender] = 0;
         }
+
+        emit RewardClaimed(msg.sender);
     }
 
     /**
@@ -157,5 +162,7 @@ contract ArkaStaking is Ownable {
         require(block.timestamp > finishAt, "not finished yet");
         (bool sent, ) = owner().call{value: address(this).balance}("");
         require(sent, "Failed to send Ether");
+
+        emit TransferUnclaimedReward();
     }
 }

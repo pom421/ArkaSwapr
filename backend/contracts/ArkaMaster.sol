@@ -70,6 +70,8 @@ contract ArkaMaster is Ownable {
 
     event Interaction(uint idResource, address user, InteractType interaction);
     event ResourceProposed(string description, string url, uint endDate);
+    event NewStake(uint amountReward);
+    event EndStake();
 
     constructor(address _arkaToken, address _priceFeedEthUsd) {
         arkaToken = ArkaERC20(_arkaToken);
@@ -160,6 +162,8 @@ contract ArkaMaster is Ownable {
         currentStake = (new ArkaStaking){value: amountReward}(
             address(arkaToken)
         );
+
+        emit NewStake(amountReward);
     }
 
     /**
@@ -179,5 +183,7 @@ contract ArkaMaster is Ownable {
 
         currentStake.transferUnclaimedReward();
         currentStake = ArkaStaking(address(0));
+
+        emit EndStake();
     }
 }
