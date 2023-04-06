@@ -8,13 +8,13 @@ import { NextPage } from "next"
 import type { AppProps } from "next/app"
 import { ReactElement, ReactNode } from "react"
 import { configureChains, createClient, goerli, WagmiConfig } from "wagmi"
-import { arbitrum, hardhat, mainnet, optimism, polygon, sepolia } from "wagmi/chains"
-import { alchemyProvider } from "wagmi/providers/alchemy"
+import { hardhat, mainnet, sepolia } from "wagmi/chains"
+import { infuraProvider } from "wagmi/providers/infura"
 import { publicProvider } from "wagmi/providers/public"
 
 const { chains, provider } = configureChains(
-  [hardhat, mainnet, polygon, optimism, arbitrum, goerli, sepolia],
-  [alchemyProvider({ apiKey: process.env.ALCHEMY_ID || "" }), publicProvider()],
+  [hardhat, mainnet, goerli, sepolia],
+  [infuraProvider({ apiKey: process.env.INFURA_ID || "" }), publicProvider()],
 )
 
 const { connectors } = getDefaultWallets({
@@ -42,11 +42,7 @@ export default function App({ Component, pageProps }: AppPropsWithLayout) {
   return (
     <WagmiConfig client={wagmiClient}>
       <RainbowKitProvider chains={chains}>
-        <ChakraProvider>
-          {/* <Component {...pageProps} /> */}
-
-          {getLayout(<Component {...pageProps} />)}
-        </ChakraProvider>
+        <ChakraProvider>{getLayout(<Component {...pageProps} />)}</ChakraProvider>
       </RainbowKitProvider>
     </WagmiConfig>
   )

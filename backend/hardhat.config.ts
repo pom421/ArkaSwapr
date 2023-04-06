@@ -9,6 +9,7 @@ dotenvConfig();
 const { INFURA_ID, ACCOUNT0_PRIVATE_KEY} = process.env;
 
 console.log("INFURA_ID", INFURA_ID);
+console.log("ACCOUNT0_PRIVATE_KEY", ACCOUNT0_PRIVATE_KEY);
 
 const config: HardhatUserConfig = {
   solidity: "0.8.18",
