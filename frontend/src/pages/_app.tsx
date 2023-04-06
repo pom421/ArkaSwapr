@@ -12,7 +12,7 @@ import { configureChains, createClient, goerli, WagmiConfig } from "wagmi"
 import { hardhat, mainnet, sepolia } from "wagmi/chains"
 import { publicProvider } from "wagmi/providers/public"
 
-const { chains, provider } = configureChains(
+const { chains, provider, webSocketProvider } = configureChains(
   [hardhat, mainnet, goerli, sepolia],
   [alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_ID || "" }), publicProvider()],
 )
@@ -26,6 +26,7 @@ const wagmiClient = createClient({
   autoConnect: true,
   connectors,
   provider,
+  webSocketProvider,
 })
 
 export type NextPageWithLayout<P = Record<string, never>, IP = P> = NextPage<P, IP> & {
