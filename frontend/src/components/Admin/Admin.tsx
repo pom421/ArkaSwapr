@@ -74,7 +74,7 @@ export const Admin = () => {
     write: writeEndStake,
   } = useArkaMasterEndCurrentStake(configEndStake)
 
-  const { isLoading: isLoadingTxEndStake, isSuccess: isSuccessTxEndStake } = useWaitForTransaction({
+  const { isLoading: isLoadingTxEndStake } = useWaitForTransaction({
     hash: dataEndStake?.hash,
   })
 
