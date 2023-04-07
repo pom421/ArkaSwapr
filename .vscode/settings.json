@@ -35,5 +35,8 @@
       "extensions": ["docker-compose.build.yml"],
       "filename": true
     }
-  ]
+  ],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

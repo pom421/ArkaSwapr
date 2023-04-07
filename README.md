@@ -6,6 +6,16 @@ Un protocole pour récompenser l'attention des utilisateurs sur des ressources W
 
 https://arka-swapr.vercel.app/
 
+## Lancer les tests
+
+**Lancer les tests avec coût en gas**
+
+`REPORT_GAS=true npx hardhat test`
+
+**Lancer la couverture des tests**
+
+`npx hardhat coverage`
+
 ### Run en développement
 
 ```
