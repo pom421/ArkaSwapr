@@ -4,7 +4,7 @@ Un protocole pour récompenser l'attention des utilisateurs sur des ressources.
 
 La stack technique repose sur hardhat, côté backend et Next.js côté front (via `npx create next-app --typescript`), avec wagmi/ethers.js et Chakra UI.
 
-## Démo sur Sepolia
+### Démo sur Sepolia
 
 https://arka-swapr.vercel.app/
 
@@ -20,7 +20,7 @@ cd ../frontend
 
 yarn dev # va lancer `yarn wagmi generate` préalablement (cf. package.json)
 ```
-## Mémo CLI hardhat
+### Mémo CLI hardhat
 
 ```shell
 npx hardhat help # aide 
@@ -39,16 +39,13 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ❯ npx hardhat run scripts/deployArka.ts --network sepolia
 ```
 
-## Pour lancer les tests
+### Tests
 
 ```shell
 ❯ npx hardhat test
-❯ REPORT_GAS=true npx hardhat test
+❯ REPORT_GAS=true npx hardhat test # avec rapport sur le coût en gas
+❯ npx hardhat coverage # lancer le rapport de couverture de tests
 ```
-
-## Lancer la couverture des tests**
-
-`npx hardhat coverage`
 
 <details>
 <summary>Couverture au 7 avril 2023</summary>
@@ -69,7 +66,11 @@ All files             |    37.74 |    25.93 |    48.15 |    34.18 |             
 </pre>
 </details>
 
-## Pour générer les types et les hooks de Wagmi
+### Générer les types et les hooks de Wagmi
+
+On utilise la génération de hooks custom en Wagmi. 
+De ce fait, plutôt qu'avoir à utiliser un useContractRead pour le contrat ArkaMaster et la fonction startStake, 
+on a a disposition un hook `useArkaMasterStartNewStake` avec l'abi, l'adresse, le nom, le provider (et le signer pour les fonctions write) de la fonction, déjà chargés.
 
 Aller dans le fichier `wagmi.config.ts`
 
@@ -94,8 +95,6 @@ Un exemple existe pour la contrat Storage.
 Ici, on a a ajouté un nom (`Storage`), ainsi qu'un abi et une address, qu'on a stocké dans un fichier.
 
 On a également ajouté le plugin react, qui va créer les hooks nécessaire pour lire et écrire dans ce contrat (et les autres qui viendront s'ajouter plus tard dans le fichier).
-
-Donc pour le contrat, on aura par exemple useStorageRetrieve et useStorageStore, qui seront déjà configurés pour appeler les fonctions Solidity.
 
 ### FAQ
 
