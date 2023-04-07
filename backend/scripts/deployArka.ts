@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 
 // Addresses ETH / USD for Chainlink.
-//const CHAIN_LINK_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419" // Mainnet
-const CHAIN_LINK_ADDRESS = "0x694AA1769357215DE4FAC081bf1f309aDC325306"; // Sepolia
+const CHAIN_LINK_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419" // Mainnet
+// const CHAIN_LINK_ADDRESS = "0x694AA1769357215DE4FAC081bf1f309aDC325306"; // Sepolia
 
 async function signerInfo() {
   const [owner] = await ethers.getSigners();
