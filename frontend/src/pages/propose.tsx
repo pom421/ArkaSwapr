@@ -5,7 +5,7 @@ import {
   usePrepareArkaMasterProposeResource,
 } from "@/generated"
 import { hasErrors } from "@/utils/errors"
-import { AtSignIcon } from "@chakra-ui/icons"
+// prettier-ignore
 import {
   Alert,
   AlertIcon,
@@ -18,13 +18,13 @@ import {
   FormLabel,
   Heading,
   Input,
-  Select,
   Text,
-  useToast,
+  useToast
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { ethers } from "ethers"
 import { FormEventHandler, ReactElement, useEffect, useState } from "react"
+import { useWaitForTransaction } from "wagmi"
 
 type FormErrorType = {
   description?: string
@@ -38,7 +38,6 @@ export default function Propose() {
   const [parent] = useAutoAnimate()
   const [description, setDescription] = useState("")
   const [url, setUrl] = useState("")
-  const [currency, setCurrency] = useState("")
   const toast = useToast()
 
   const priceInWei = useArkaMasterGetPriceForProposalInWei()
@@ -51,7 +50,17 @@ export default function Propose() {
       value: ethers.utils.parseEther(priceInWeiString),
     },
   })
-  const { isLoading, isSuccess, write } = useArkaMasterProposeResource(config)
+  const {
+    data: dataProposeResource,
+    isSuccess: isSuccessProposeResource,
+    isLoading: isLoadingProposeResource,
+    write,
+    isError: isErrorProposeResource,
+  } = useArkaMasterProposeResource(config)
+
+  const { isSuccess: isSuccessWaitForTx } = useWaitForTransaction({
+    hash: dataProposeResource?.hash,
+  })
 
   const handleSubmit: FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
@@ -68,25 +77,37 @@ export default function Propose() {
     if (hasErrors(errors)) return setErrors(errors)
     else {
       setErrors({})
-      console.debug("handleSubmit", description, url, currency)
+      console.debug("handleSubmit", description, url)
       write?.()
     }
   }
 
   useEffect(() => {
-    if (isSuccess) {
+    if (isSuccessWaitForTx) {
       toast({
         title: "La ressource a été ajoutée.",
         description: "Votre ressource sera visible dans quelques instants.",
         duration: 5000,
         isClosable: true,
+        status: "success",
       })
 
       setDescription("")
       setUrl("")
-      setCurrency("")
     }
-  }, [isSuccess, toast])
+    if (isErrorProposeResource) {
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue lors de l'ajout de la ressource.",
+        duration: 5000,
+        isClosable: true,
+        status: "error",
+      })
+
+      setDescription("")
+      setUrl("")
+    }
+  }, [isSuccessProposeResource, toast, isErrorProposeResource, isSuccessWaitForTx])
 
   return (
     <main>
@@ -124,7 +145,6 @@ export default function Propose() {
                   name="description"
                   placeholder="New kid on the block"
                 />
-                {/* <FormHelperText>La description ne peut pas être vide.</FormHelperText> */}
                 <FormErrorMessage>{errors?.description}</FormErrorMessage>
               </FormControl>
               <FormControl isInvalid={Boolean(errors?.url)}>
@@ -140,25 +160,12 @@ export default function Propose() {
                 />
                 <FormErrorMessage>{errors.url}</FormErrorMessage>
               </FormControl>
-              <FormControl>
-                <FormLabel>Token</FormLabel>
-                <Select name="currency" value={currency} onChange={(e) => setCurrency(e.target.value)}>
-                  <option value="USDT">
-                    <Flex>
-                      <AtSignIcon />
-                      USDT
-                    </Flex>
-                  </option>
-                  <option value="wETH">wETH</option>
-                </Select>
-              </FormControl>
               <Alert status="info" mt="8" variant="solid">
                 <AlertIcon />
-                {/* Mettre un titre à l'alert */}
                 <AlertTitle>Estimation du prix</AlertTitle>
                 <Text> {priceInWeiString} ethers</Text>
               </Alert>
-              <Button mt="8" type="submit" size="lg" disabled={isLoading || hasErrors(errors)}>
+              <Button mt="8" type="submit" size="lg" disabled={isLoadingProposeResource || hasErrors(errors)}>
                 Ajouter
               </Button>
             </Flex>
