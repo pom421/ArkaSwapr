@@ -38,7 +38,7 @@
     "react-dom": "18.2.0",
     "react-icons": "^4.8.0",
     "typescript": "5.0.2",
-    "wagmi": "^0.12.6"
+    "wagmi": "^0.12.10"
   },
   "devDependencies": {
     "@wagmi/cli": "^0.1.14"
