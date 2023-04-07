@@ -22,7 +22,7 @@ import Head from "next/head"
 import NextLink from "next/link"
 import { ReactNode, ReactText } from "react"
 import { IconType } from "react-icons"
-import { FiCompass, FiHome, FiMenu, FiStar, FiTrendingUp } from "react-icons/fi"
+import { FiCompass, FiHome, FiMenu, FiSettings, FiStar, FiTrendingUp } from "react-icons/fi"
 import { ClientOnly } from "./ClientOnly"
 
 interface LinkItemProps {
@@ -35,7 +35,7 @@ const linkItems: Array<LinkItemProps> = [
   { name: "Propose", icon: FiStar, url: "./propose" },
   { name: "Explore", icon: FiCompass, url: "./explore" },
   { name: "Staking", icon: FiTrendingUp, url: "./staking" },
-  { name: "Admin", icon: FiTrendingUp, url: "./admin" },
+  { name: "Admin", icon: FiSettings, url: "./admin" },
 ]
 
 export default function Layout({ children }: { children: ReactNode }) {

@@ -1,14 +1,8 @@
-import {
-  useArkaErc20Approve,
-  useArkaErc20BalanceOf,
-  useArkaMasterCurrentStake,
-  useArkaStakingAmountReward,
-  useArkaStakingDeposit,
-  useArkaStakingFinishAt,
-  useArkaStakingStakeBalanceOf,
-  usePrepareArkaErc20Approve,
-  usePrepareArkaStakingDeposit,
-} from "@/generated"
+import { useArkaErc20BalanceOf } from "@/generated"
+import { useCustomArkaERC20Approve } from "@/hooks/useCustomArkaERC20Approve"
+import { useCustomStaking } from "@/hooks/useCustomStaking"
+import { useCustomStakingDeposit } from "@/hooks/useCustomStakingDeposit"
+import useDebounce from "@/hooks/useDebounce"
 import { formatTimestamp } from "@/utils/date"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
@@ -36,12 +30,12 @@ import {
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { BigNumber, ethers } from "ethers"
-import { parseEther } from "ethers/lib/utils.js"
+import { formatEther, parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
-import { useAccount, useWaitForTransaction } from "wagmi"
+import { useAccount } from "wagmi"
 
 type FormProps = {
-  rewardAmount?: string
+  stakeAmount?: string
 }
 
 export const Staking = () => {
@@ -49,6 +43,8 @@ export const Staking = () => {
   const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
   const { address } = useAccount()
   const [stakeAmount, setStakeAmount] = useState("")
+  const debouncedStakeAmount = useDebounce(stakeAmount, 500)
+
   const color = useColorModeValue("blue.500", "cyan.500")
   const toast = useToast()
 
@@ -61,46 +57,34 @@ export const Staking = () => {
     watch: true,
   })
 
-  // Current stake address, if any
-  const { data: addressCurrentStake } = useArkaMasterCurrentStake({
-    watch: true,
-  })
+  console.log("stakeAmount:", stakeAmount)
+  console.log("stakeAmount formatEther:", formatEther(stakeAmount || "0"))
 
-  // Current stake finish date
-  const { data: finishAt } = useArkaStakingFinishAt({
-    address: addressCurrentStake,
-    enabled: ethers.constants.AddressZero !== addressCurrentStake,
-  })
-
-  // Current stake reward amount
-  const { data: amountReward } = useArkaStakingAmountReward({
-    address: addressCurrentStake,
-    enabled: ethers.constants.AddressZero !== addressCurrentStake,
-  })
-
-  // Get current stake balance of user
-  const { data: arkaAlreadyStaked } = useArkaStakingStakeBalanceOf({
-    address: addressCurrentStake,
-    args: [address || ethers.constants.AddressZero],
-    enabled: ethers.constants.AddressZero !== addressCurrentStake,
-    watch: true,
-  })
+  const { addressCurrentStake, finishAt, amountReward, arkaAlreadyStaked } = useCustomStaking({ address })
 
   // Deposit on ArkaStaking
-  const { config: configDeposit } = usePrepareArkaStakingDeposit({
-    address: addressCurrentStake,
-    args: [parseEther(stakeAmount || "0")],
-    enabled: ethers.constants.AddressZero !== addressCurrentStake,
+  const {
+    isError: isErrorStakingDeposit,
+    error: errorStakingDeposit,
+    isLoading: isLoadingStakingDeposit,
+    isSuccess: isSuccessStakingDeposit,
+    write: writeStakingDeposit,
+  } = useCustomStakingDeposit({
+    addressCurrentStake,
+    stakeAmount: parseEther(debouncedStakeAmount || "0"),
   })
-  const { isError: isErrorStakingDeposit, write: writeDeposit } = useArkaStakingDeposit(configDeposit)
 
   // Approve on ArkaERC20
-  const { config: configApprove } = usePrepareArkaErc20Approve({
-    args: [addressCurrentStake || ethers.constants.AddressZero, parseEther(stakeAmount || "0")],
-    enabled: ethers.constants.AddressZero !== addressCurrentStake,
+  const {
+    isError: isErrorApprove,
+    error: errorApprove,
+    write: writeApprove,
+    isLoading: isLoadingApprove,
+    isSuccess: isSuccessApprove,
+  } = useCustomArkaERC20Approve({
+    addressCurrentStake,
+    stakeAmount: parseEther(debouncedStakeAmount || "0"),
   })
-  const { data: dataApprove, write: writeApprove } = useArkaErc20Approve(configApprove)
-  const { isSuccess: isSuccessApprove } = useWaitForTransaction(dataApprove)
 
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
@@ -109,14 +93,14 @@ export const Staking = () => {
 
   useEffect(() => {
     if (isSuccessApprove) {
-      writeDeposit?.()
+      writeStakingDeposit?.()
     }
-  }, [isSuccessApprove, writeDeposit])
+  }, [isSuccessApprove, writeStakingDeposit])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    console.log("on va ajouter", stakeAmount)
+    console.log("on va ajouter", debouncedStakeAmount)
 
     try {
       writeApprove?.()
@@ -212,9 +196,9 @@ export const Staking = () => {
               {!isFinisdhedStake(finishAt) && (
                 <form onSubmit={handleSubmit}>
                   <Flex direction="row" gap="4">
-                    <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
+                    <FormControl isInvalid={Boolean(errors?.stakeAmount)}>
                       <FormLabel fontSize="lg">
-                        Arka à staker (max: {ethers.utils.formatEther(balanceInArka || 0)})
+                        ARKA à staker (max: {ethers.utils.formatEther(balanceInArka || 0)})
                       </FormLabel>
                       <NumberInput
                         name="stakeAmount"
@@ -234,10 +218,15 @@ export const Staking = () => {
                           <NumberDecrementStepper />
                         </NumberInputStepper>
                       </NumberInput>
-                      <FormErrorMessage>{errors?.rewardAmount}</FormErrorMessage>
+                      <FormErrorMessage>{errors?.stakeAmount}</FormErrorMessage>
                     </FormControl>
-                    <Button mt="8" type="submit" size="lg" disabled={isLoadingBalance || hasErrors(errors)}>
-                      Staker
+                    <Button
+                      mt="8"
+                      type="submit"
+                      size="lg"
+                      disabled={isLoadingBalance || isLoadingApprove || isLoadingStakingDeposit || hasErrors(errors)}
+                    >
+                      {isLoadingApprove || isLoadingStakingDeposit ? "Stake en cours..." : "Staker"}
                     </Button>
                   </Flex>
                 </form>

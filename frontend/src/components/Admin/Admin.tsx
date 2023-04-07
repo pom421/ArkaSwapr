@@ -1,11 +1,9 @@
 import { ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
-import {
-  useArkaMasterCurrentStake,
-  useArkaMasterEndCurrentStake,
-  useArkaMasterStartNewStake,
-  usePrepareArkaMasterEndCurrentStake,
-  usePrepareArkaMasterStartNewStake,
-} from "@/generated"
+import { useArkaMasterCurrentStake } from "@/generated"
+import { useCustomEndStake } from "@/hooks/useCustomEndStake"
+import { useCustomNewStake } from "@/hooks/useCustomNewStake"
+import useDebounce from "@/hooks/useDebounce"
+import { isAddressZero } from "@/utils/contract"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
@@ -21,15 +19,18 @@ import {
   FormErrorMessage,
   FormLabel,
   Heading,
-  Input,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
   Text,
-  useColorModeValue,
+  useColorModeValue
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { ethers } from "ethers"
 import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
-import { useBalance, useWaitForTransaction } from "wagmi"
+import { useBalance } from "wagmi"
 
 type FormProps = {
   rewardAmount?: string
@@ -39,8 +40,18 @@ export const Admin = () => {
   const [parent] = useAutoAnimate()
   const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
   const [rewardAmount, setRewardAmount] = useState("")
+  const debouncedRewardAmount = useDebounce(rewardAmount, 500)
+
   const color = useColorModeValue("blue.500", "cyan.500")
 
+  // Get current stake address, if any.
+  const { data: addressCurrentStake } = useArkaMasterCurrentStake({
+    watch: true,
+  })
+
+  console.log("addressCurrentStake", addressCurrentStake)
+
+  // Get balance in ETH of ArkaMaster contract.
   const {
     data: balanceData,
     isError: isErrorBalance,
@@ -50,45 +61,34 @@ export const Admin = () => {
     watch: true,
   })
 
-  const { config: configNewStake } = usePrepareArkaMasterStartNewStake({
-    args: [parseEther(rewardAmount || "0")],
-  })
+  console.log("rewardAmount:", rewardAmount)
+
+  // Get helpers for creating a new stake.
   const {
-    data: dataNewStake,
-    isLoading: isLoadingNewStake,
     isError: isErrorNewStake,
     error: errorNewStake,
+    isLoading: isLoadingNewStake,
+    isSuccess: isSuccessNewStake,
     write: writeNewStake,
-  } = useArkaMasterStartNewStake(configNewStake)
-
-  const { isLoading: isLoadingTxNewStake, isSuccess: isSuccessTxNewStake } = useWaitForTransaction({
-    hash: dataNewStake?.hash,
+  } = useCustomNewStake({
+    rewardAmount: parseEther(debouncedRewardAmount || "0"),
+    enabled: parseEther(debouncedRewardAmount || "0").gt(parseEther("0")),
   })
 
-  const { config: configEndStake } = usePrepareArkaMasterEndCurrentStake()
+  // Get helpers for ending a stake.
   const {
-    data: dataEndStake,
-    isLoading: isLoadingEndStake,
     isError: isErrorEndStake,
     error: errorEndStake,
+    isLoading: isLoadingEndStake,
+    isSuccess: isSuccessEndStake,
     write: writeEndStake,
-  } = useArkaMasterEndCurrentStake(configEndStake)
+  } = useCustomEndStake({ enabled: !isAddressZero(addressCurrentStake) })
 
-  const { isLoading: isLoadingTxEndStake } = useWaitForTransaction({
-    hash: dataEndStake?.hash,
-  })
-
-  const { data: addressCurrentStake } = useArkaMasterCurrentStake({
-    watch: true,
-  })
+  console.log("errorEndStake:", errorEndStake)
 
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
     if (isErrorNewStake) setErrors({ globalError: "Erreur lors de la création du contrat de staking" })
-    if (isErrorNewStake)
-      setErrors({
-        globalError: errorNewStake?.message || "Erreur lors de la création du contrat de staking",
-      })
     if (isErrorEndStake)
       setErrors({
         globalError: errorEndStake?.message || "Erreur lors de la fermeture du contrat de staking",
@@ -126,11 +126,11 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
-          {(isSuccessTxNewStake || isSuccessTxNewStake) && (
+          {(isSuccessNewStake || isSuccessEndStake) && (
             <Alert status="success">
               <AlertIcon />
               <Box>
-                <AlertTitle>{isSuccessTxNewStake ? "Stake créé" : "Stake terminé"}</AlertTitle>
+                <AlertTitle>{isSuccessNewStake ? "Stake créé" : "Stake terminé"}</AlertTitle>
               </Box>
             </Alert>
           )}
@@ -152,14 +152,14 @@ export const Admin = () => {
             </Text>
           </Text>
 
-          {addressCurrentStake !== ethers.constants.AddressZero ? (
+          {!isAddressZero(addressCurrentStake) ? (
             <>
               <Text fontSize="lg">Vous avez déjà un stake en cours.</Text>
               <Button
                 mt="8"
                 type="submit"
                 size="lg"
-                disabled={isLoadingEndStake || isLoadingTxEndStake}
+                disabled={!writeEndStake || isLoadingEndStake}
                 onClick={writeEndStake}
               >
                 Terminer le stake
@@ -169,27 +169,33 @@ export const Admin = () => {
             <form onSubmit={handleSubmit}>
               <Flex direction="row" gap="4">
                 <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
-                  <FormLabel>Montant</FormLabel>
-                  <Input
+                  <FormLabel fontSize="lg">Arka à staker (max: {balanceData?.formatted})</FormLabel>
+                  <NumberInput
                     name="rewardAmount"
                     placeholder="Amount"
                     value={rewardAmount}
-                    onChange={(e) => {
+                    min={0}
+                    max={Number(balanceData?.formatted)}
+                    step={0.1}
+                    onChange={(rewardAmount) => {
                       setErrors({})
-                      setRewardAmount(e.target.value.replaceAll(",", "."))
+                      setRewardAmount(rewardAmount)
                     }}
-                  />
+                  >
+                    <NumberInputField />
+                    <NumberInputStepper>
+                      <NumberIncrementStepper />
+                      <NumberDecrementStepper />
+                    </NumberInputStepper>
+                  </NumberInput>
                   <FormErrorMessage>{errors?.rewardAmount}</FormErrorMessage>
                 </FormControl>
+
                 <Button
                   mt="8"
                   type="submit"
                   size="lg"
-                  disabled={
-                    isLoadingBalance ||
-                    isLoadingNewStake ||
-                    hasErrors(errors || isLoadingNewStake || isLoadingTxNewStake)
-                  }
+                  disabled={isLoadingBalance || isLoadingNewStake || hasErrors(errors)}
                 >
                   Démarrer
                 </Button>
