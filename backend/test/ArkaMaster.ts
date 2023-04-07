@@ -110,8 +110,7 @@ describe("ArkaMaster", function () {
 
     describe("ArkaMaster.interact", function () {
       it("interacts correctly with a resource, test storage", async function () {
-        const { arkaERC20, arkaMaster, oracle, account1, owner } =
-          await loadFixture(deployArkaContracts);
+        const { arkaMaster, account1 } = await loadFixture(deployArkaContracts);
 
         const lastId = await arkaMaster.getResourceLength();
 
@@ -128,6 +127,65 @@ describe("ArkaMaster", function () {
         expect(
           await arkaMaster.getInteraction(lastId, account1.address)
         ).to.equal(InteractionType.like);
+      });
+      it("interacts correctly with a resource, test event", async function () {
+        const { arkaMaster, account1 } = await loadFixture(deployArkaContracts);
+
+        const lastId = await arkaMaster.getResourceLength();
+
+        const price = await arkaMaster.getPriceForProposalInWei();
+
+        await arkaMaster.proposeResource(description, url, {
+          value: price,
+        });
+
+        await arkaMaster
+          .connect(account1)
+          .interact(lastId, InteractionType.like);
+
+        expect(await arkaMaster.getInteraction(lastId, account1.address))
+          .to.emit(arkaMaster, "Interaction")
+          .withArgs(lastId, account1.address, InteractionType.like);
+      });
+      it("interacts correctly with a resource, test mint", async function () {
+        const { arkaERC20, arkaMaster, account1 } = await loadFixture(
+          deployArkaContracts
+        );
+
+        const lastId = await arkaMaster.getResourceLength();
+
+        const price = await arkaMaster.getPriceForProposalInWei();
+
+        await arkaMaster.proposeResource(description, url, {
+          value: price,
+        });
+
+        await arkaMaster
+          .connect(account1)
+          .interact(lastId, InteractionType.like);
+
+        expect(await arkaERC20.balanceOf(account1.address)).to.be.equal(
+          ethers.utils.parseEther("2")
+        );
+      });
+      it("interacts incorrectly with a resource because already have interaction, test require", async function () {
+        const { arkaMaster, account1 } = await loadFixture(deployArkaContracts);
+
+        const lastId = await arkaMaster.getResourceLength();
+
+        const price = await arkaMaster.getPriceForProposalInWei();
+
+        await arkaMaster.proposeResource(description, url, {
+          value: price,
+        });
+
+        await arkaMaster
+          .connect(account1)
+          .interact(lastId, InteractionType.like);
+
+        await expect(
+          arkaMaster.connect(account1).interact(lastId, InteractionType.like)
+        ).to.be.revertedWith("You already add interaction on this resource");
       });
     });
   });

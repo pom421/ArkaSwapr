@@ -89,23 +89,19 @@ contract ArkaMaster is Ownable {
     }
 
     /**
-     * A user can interact one time with a resource (liking, unliking, etc.) and get rewarded by minting 1 token of arkaToken.
-     *
-     * @param _idResource The id of the resource.
-     * @param _interaction The type of interaction.
+     * @notice Get the resource at index.
      */
-    function interact(uint _idResource, InteractType _interaction) public {
-        require(
-            interactions[_idResource][msg.sender] == InteractType.unset,
-            "You already add interaction on this resource"
-        );
+    function getResource(
+        uint _idResource
+    ) external view returns (Resource memory) {
+        return resources[_idResource];
+    }
 
-        interactions[_idResource][msg.sender] = _interaction;
-
-        // Rewards the user by minting some arkaTokens to the user.
-        arkaToken.mintArka(msg.sender, amountArkaRewards);
-
-        emit Interaction(_idResource, msg.sender, _interaction);
+    /**
+     * @notice Get the resource length.
+     */
+    function getResourceLength() external view returns (uint) {
+        return resources.length;
     }
 
     /**
@@ -132,7 +128,6 @@ contract ArkaMaster is Ownable {
         string calldata _description,
         string calldata _url
     ) external payable {
-        console.log("dans ProposeResource", _description, msg.value);
         require(
             msg.value >= getPriceForProposalInWei(),
             "You need to pay the price of 7 days of hosting"
@@ -142,6 +137,26 @@ contract ArkaMaster is Ownable {
         resources.push(Resource(_description, _url, block.timestamp + 7 days));
 
         emit ResourceProposed(_description, _url, block.timestamp + 7 days);
+    }
+
+    /**
+     * A user can interact one time with a resource (liking, unliking, etc.) and get rewarded by minting 1 token of arkaToken.
+     *
+     * @param _idResource The id of the resource.
+     * @param _interaction The type of interaction.
+     */
+    function interact(uint _idResource, InteractType _interaction) public {
+        require(
+            interactions[_idResource][msg.sender] == InteractType.unset,
+            "You already add interaction on this resource"
+        );
+
+        interactions[_idResource][msg.sender] = _interaction;
+
+        // Rewards the user by minting some arkaTokens to the user.
+        arkaToken.mintArka(msg.sender, amountArkaRewards);
+
+        emit Interaction(_idResource, msg.sender, _interaction);
     }
 
     /**
