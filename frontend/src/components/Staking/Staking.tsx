@@ -1,6 +1,6 @@
-import { ArkaERC20Address } from "@/contracts/ArkaERC20"
 import {
   useArkaErc20Approve,
+  useArkaErc20BalanceOf,
   useArkaMasterCurrentStake,
   useArkaStakingAmountReward,
   useArkaStakingDeposit,
@@ -36,9 +36,9 @@ import {
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { BigNumber, ethers } from "ethers"
-import { parseEther } from "ethers/lib/utils.js"
+import { formatEther, parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
-import { useAccount, useBalance, useWaitForTransaction } from "wagmi"
+import { useAccount, useWaitForTransaction } from "wagmi"
 
 type FormProps = {
   rewardAmount?: string
@@ -53,15 +53,26 @@ export const Staking = () => {
   const toast = useToast()
 
   // Balance de l'utilisateur en Arka
+  // const {
+  //   data: balanceInArka,
+  //   isError: isErrorBalance,
+  //   isLoading: isLoadingBalance,
+  // } = useBalance({
+  //   address,
+  //   token: ArkaERC20Address,
+  //   watch: true,
+  // })
+
   const {
     data: balanceInArka,
     isError: isErrorBalance,
     isLoading: isLoadingBalance,
-  } = useBalance({
-    address,
-    token: ArkaERC20Address,
+  } = useArkaErc20BalanceOf({
+    args: [address || ethers.constants.AddressZero],
     watch: true,
   })
+
+  console.log("balanceInArka", formatEther(balanceInArka || 0))
 
   // Current stake address, if any
   const { data: addressCurrentStake } = useArkaMasterCurrentStake({
@@ -71,17 +82,20 @@ export const Staking = () => {
   // Current stake finish date
   const { data: finishAt } = useArkaStakingFinishAt({
     address: addressCurrentStake,
+    enabled: ethers.constants.AddressZero !== addressCurrentStake,
   })
 
   // Current stake reward amount
   const { data: amountReward } = useArkaStakingAmountReward({
     address: addressCurrentStake,
+    enabled: ethers.constants.AddressZero !== addressCurrentStake,
   })
 
   // Get current stake balance of user
   const { data: arkaAlreadyStaked } = useArkaStakingStakeBalanceOf({
     address: addressCurrentStake,
     args: [address || ethers.constants.AddressZero],
+    enabled: ethers.constants.AddressZero !== addressCurrentStake,
     watch: true,
   })
 
@@ -89,12 +103,14 @@ export const Staking = () => {
   const { config: configDeposit } = usePrepareArkaStakingDeposit({
     address: addressCurrentStake,
     args: [parseEther(stakeAmount || "0")],
+    enabled: ethers.constants.AddressZero !== addressCurrentStake,
   })
   const { isError: isErrorStakingDeposit, write: writeDeposit } = useArkaStakingDeposit(configDeposit)
 
   // Approve on ArkaERC20
   const { config: configApprove } = usePrepareArkaErc20Approve({
     args: [addressCurrentStake || ethers.constants.AddressZero, parseEther(stakeAmount || "0")],
+    enabled: ethers.constants.AddressZero !== addressCurrentStake,
   })
   const { data: dataApprove, write: writeApprove } = useArkaErc20Approve(configApprove)
   const { isSuccess: isSuccessApprove } = useWaitForTransaction(dataApprove)
@@ -210,13 +226,15 @@ export const Staking = () => {
                 <form onSubmit={handleSubmit}>
                   <Flex direction="row" gap="4">
                     <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
-                      <FormLabel fontSize="lg">Arka à staker (max: {balanceInArka?.formatted})</FormLabel>
+                      <FormLabel fontSize="lg">
+                        Arka à staker (max: {ethers.utils.formatEther(balanceInArka || 0)})
+                      </FormLabel>
                       <NumberInput
                         name="stakeAmount"
                         placeholder="Amount"
                         value={stakeAmount}
                         min={0}
-                        max={Number(balanceInArka?.formatted || 0)}
+                        max={Number(ethers.utils.formatEther(balanceInArka || 0))}
                         step={0.1}
                         onChange={(stakeAmount) => {
                           setErrors({})

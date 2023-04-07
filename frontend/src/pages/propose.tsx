@@ -40,16 +40,19 @@ export default function Propose() {
   const [url, setUrl] = useState("")
   const toast = useToast()
 
+  // Get price.
   const priceInWei = useArkaMasterGetPriceForProposalInWei()
 
   const priceInWeiString = ethers.utils.formatEther(priceInWei?.data || "0")
 
+  // Prepare propose resource.
   const { config } = usePrepareArkaMasterProposeResource({
     args: [description, url],
     overrides: {
-      value: ethers.utils.parseEther(priceInWeiString),
+      value: priceInWei.data,
     },
   })
+  // Propose resource.
   const {
     data: dataProposeResource,
     isSuccess: isSuccessProposeResource,
@@ -58,6 +61,7 @@ export default function Propose() {
     isError: isErrorProposeResource,
   } = useArkaMasterProposeResource(config)
 
+  // Wait for transaction of proposed resource.
   const { isSuccess: isSuccessWaitForTx } = useWaitForTransaction({
     hash: dataProposeResource?.hash,
   })
@@ -82,6 +86,7 @@ export default function Propose() {
     }
   }
 
+  // Display according to success or error.
   useEffect(() => {
     if (isSuccessWaitForTx) {
       toast({
