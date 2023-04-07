@@ -14,7 +14,7 @@ import { publicProvider } from "wagmi/providers/public"
 
 const { chains, provider } = configureChains(
   [hardhat, mainnet, goerli, sepolia],
-  [infuraProvider({ apiKey: "edac3c26035f400981d2634401b83dcd" }), publicProvider()],
+  [infuraProvider({ apiKey: process.env.NEXT_PUBLIC_INFURA_ID || "" }), publicProvider()],
 )
 
 const { connectors } = getDefaultWallets({
