@@ -36,6 +36,7 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ### Déploiement sur Sepolia
 
 ```shell
+# Auparavant, changer dans scripts/deploytArka.ts l'adresse de ChainLink ! En local, on veut celui de mainnet. 
 ❯ npx hardhat run scripts/deployArka.ts --network sepolia
 ```
 
