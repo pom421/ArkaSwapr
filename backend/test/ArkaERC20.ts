@@ -3,7 +3,7 @@ import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { ethers } from "hardhat";
 
-const CHAIN_LINK_ADDRESS = "0x694AA1769357215DE4FAC081bf1f309aDC325306"; // Sepolia
+const CHAIN_LINK_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"; // Mainnet
 
 describe("ArkaMaster", function () {
   async function deployArkaContracts() {
@@ -28,7 +28,16 @@ describe("ArkaMaster", function () {
     );
     await arkaMaster.deployed();
 
-    return { owner, account1, oracle, arkaERC20, arkaMaster };
+    const priceForProposalInWei = await arkaMaster.getPriceForProposalInWei();
+
+    return {
+      owner,
+      account1,
+      oracle,
+      arkaERC20,
+      arkaMaster,
+      priceForProposalInWei,
+    };
   }
 
   describe("ArkaERC20 tests", function () {
@@ -55,20 +64,5 @@ describe("ArkaMaster", function () {
         BigNumber.from("1000000000000000000")
       );
     });
-    // Problem because arkaMaster contract has no eth balance to mint. Need to test it in ArkaMaster.interact.
-    // it("Should mint ArkaERC20 only for ArkaMaster address", async function () {
-    //   const { account1, arkaERC20, arkaMaster } = await loadFixture(
-    //     deployArkaContracts
-    //   );
-    //   await arkaERC20.setArkaMaster(arkaMaster.address);
-
-    //    expect(await arkaERC20.balanceOf(account1.address)).to.equal(0);
-
-    //   const arkaMasterSigner = await ethers.getImpersonatedSigner(arkaMaster.address);
-
-    //   await arkaERC20.connect(arkaMasterSigner).mintArka(account1.address, 5);
-
-    //    expect(await arkaERC20.balanceOf(account1.address)).to.equal(0);
-    // });
   });
 });
