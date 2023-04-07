@@ -36,7 +36,7 @@ import {
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { BigNumber, ethers } from "ethers"
-import { formatEther, parseEther } from "ethers/lib/utils.js"
+import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount, useWaitForTransaction } from "wagmi"
 
@@ -52,17 +52,6 @@ export const Staking = () => {
   const color = useColorModeValue("blue.500", "cyan.500")
   const toast = useToast()
 
-  // Balance de l'utilisateur en Arka
-  // const {
-  //   data: balanceInArka,
-  //   isError: isErrorBalance,
-  //   isLoading: isLoadingBalance,
-  // } = useBalance({
-  //   address,
-  //   token: ArkaERC20Address,
-  //   watch: true,
-  // })
-
   const {
     data: balanceInArka,
     isError: isErrorBalance,
@@ -71,8 +60,6 @@ export const Staking = () => {
     args: [address || ethers.constants.AddressZero],
     watch: true,
   })
-
-  console.log("balanceInArka", formatEther(balanceInArka || 0))
 
   // Current stake address, if any
   const { data: addressCurrentStake } = useArkaMasterCurrentStake({
