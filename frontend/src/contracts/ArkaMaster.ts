@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0x6345e50859b0Ce82D8A495ba9894C6C81de385F3"
+export const ArkaMasterContractAddress = "0x89372b32b8AF3F1272e2efb3088616318D2834cA"
 
 export const ArkaMasterContractAbi = [
   {
@@ -182,6 +182,55 @@ export const ArkaMasterContractAbi = [
         name: "_idResource",
         type: "uint256",
       },
+    ],
+    name: "getResource",
+    outputs: [
+      {
+        components: [
+          {
+            internalType: "string",
+            name: "description",
+            type: "string",
+          },
+          {
+            internalType: "string",
+            name: "url",
+            type: "string",
+          },
+          {
+            internalType: "uint256",
+            name: "endDate",
+            type: "uint256",
+          },
+        ],
+        internalType: "struct ArkaMaster.Resource",
+        name: "",
+        type: "tuple",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getResourceLength",
+    outputs: [
+      {
+        internalType: "uint256",
+        name: "",
+        type: "uint256",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [
+      {
+        internalType: "uint256",
+        name: "_idResource",
+        type: "uint256",
+      },
       {
         internalType: "enum ArkaMaster.InteractType",
         name: "_interaction",
@@ -301,7 +350,7 @@ export const ArkaMasterContractAbi = [
     inputs: [
       {
         internalType: "uint256",
-        name: "amountReward",
+        name: "_amountReward",
         type: "uint256",
       },
     ],
