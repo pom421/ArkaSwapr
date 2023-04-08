@@ -1,7 +1,7 @@
 import { ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
-import { useArkaMasterCurrentStake } from "@/generated"
 import { useCustomEndStake } from "@/hooks/useCustomEndStake"
 import { useCustomNewStake } from "@/hooks/useCustomNewStake"
+import { useCustomReadStaking } from "@/hooks/useCustomReadStaking"
 import useDebounce from "@/hooks/useDebounce"
 import { isAddressZero } from "@/utils/contract"
 import { hasErrors } from "@/utils/errors"
@@ -28,7 +28,7 @@ import {
   useColorModeValue
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { parseEther } from "ethers/lib/utils.js"
+import { formatEther, parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useBalance } from "wagmi"
 
@@ -44,10 +44,9 @@ export const Admin = () => {
 
   const color = useColorModeValue("blue.500", "cyan.500")
 
-  // Get current stake address, if any.
-  const { data: addressCurrentStake } = useArkaMasterCurrentStake({
-    watch: true,
-  })
+  // Get current stake address, if any and its total suply.
+
+  const { addressCurrentStake, totalSupply } = useCustomReadStaking()
 
   console.log("addressCurrentStake", addressCurrentStake)
 
@@ -155,6 +154,12 @@ export const Admin = () => {
           {!isAddressZero(addressCurrentStake) ? (
             <>
               <Text fontSize="lg">Vous avez déjà un stake en cours.</Text>
+              <Text fontSize="lg">
+                {"Nb d'ARKA stakés"}
+                <Text as="span" color={color} ml="4">
+                  {formatEther(totalSupply || "0")} ARKA
+                </Text>
+              </Text>
               <Button
                 mt="8"
                 type="submit"

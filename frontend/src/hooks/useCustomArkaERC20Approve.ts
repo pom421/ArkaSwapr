@@ -15,7 +15,7 @@ export const useCustomArkaERC20Approve = ({ addressCurrentStake, stakeAmount }: 
     error: errorPrepare,
   } = usePrepareArkaErc20Approve({
     args: [addressCurrentStake || ethers.constants.AddressZero, stakeAmount || BigNumber.from(0)],
-    enabled: !isAddressZero(addressCurrentStake),
+    enabled: !isAddressZero(addressCurrentStake) && (stakeAmount || BigNumber.from(0)).gt(0),
   })
   const { data, isError, error, write } = useArkaErc20Approve(config)
 

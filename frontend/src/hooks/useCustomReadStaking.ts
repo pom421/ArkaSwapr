@@ -1,9 +1,10 @@
 // prettier-ignore
 import {
-    useArkaMasterCurrentStake,
-    useArkaStakingAmountReward,
-    useArkaStakingFinishAt,
-    useArkaStakingStakeBalanceOf,
+  useArkaMasterCurrentStake,
+  useArkaStakingAmountReward,
+  useArkaStakingFinishAt,
+  useArkaStakingStakeBalanceOf,
+  useArkaStakingTotalSupply,
 } from "@/generated"
 import { isAddressZero } from "@/utils/contract"
 import { ethers } from "ethers"
@@ -13,10 +14,15 @@ type Props = {
   address?: Address
 }
 
-export const useCustomStaking = ({ address }: Props) => {
+export const useCustomReadStaking = ({ address = ethers.constants.AddressZero }: Props = {}) => {
   // Current stake address, if any
   const { data: addressCurrentStake } = useArkaMasterCurrentStake({
     watch: true,
+  })
+
+  const { data: totalSupply } = useArkaStakingTotalSupply({
+    address: addressCurrentStake,
+    enabled: !isAddressZero(addressCurrentStake),
   })
 
   // Current stake finish date
@@ -44,5 +50,6 @@ export const useCustomStaking = ({ address }: Props) => {
     finishAt,
     amountReward,
     arkaAlreadyStaked,
+    totalSupply,
   }
 }

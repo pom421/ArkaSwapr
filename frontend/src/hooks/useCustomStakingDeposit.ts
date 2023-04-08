@@ -19,7 +19,7 @@ export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Pr
   } = usePrepareArkaStakingDeposit({
     address: addressCurrentStake,
     args: [stakeAmount],
-    enabled: !isAddressZero(addressCurrentStake) && !stakeAmount.eq(0),
+    enabled: !isAddressZero(addressCurrentStake) && (stakeAmount || BigNumber.from(0)).gt(0),
   })
   const { data, isError, error, write } = useArkaStakingDeposit(config)
 

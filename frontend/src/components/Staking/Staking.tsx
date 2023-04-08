@@ -1,6 +1,6 @@
 import { useArkaErc20BalanceOf } from "@/generated"
 import { useCustomArkaERC20Approve } from "@/hooks/useCustomArkaERC20Approve"
-import { useCustomStaking } from "@/hooks/useCustomStaking"
+import { useCustomReadStaking } from "@/hooks/useCustomReadStaking"
 import { useCustomStakingDeposit } from "@/hooks/useCustomStakingDeposit"
 import useDebounce from "@/hooks/useDebounce"
 import { formatTimestamp } from "@/utils/date"
@@ -25,18 +25,23 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
-  useColorModeValue,
-  useToast
+  useColorModeValue
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
 import { BigNumber, ethers } from "ethers"
-import { formatEther, parseEther } from "ethers/lib/utils.js"
+import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
 
 type FormProps = {
   stakeAmount?: string
 }
+
+/*
+  TODO: le approve fonctionne !
+  En revanche, ensuite il ya  une boucle infinie en React, qui doit vouloir faire le deposit.
+  Je peux aussi faire 2 boutons si ça peut aider.
+ */
 
 export const Staking = () => {
   const [parent] = useAutoAnimate()
@@ -46,7 +51,6 @@ export const Staking = () => {
   const debouncedStakeAmount = useDebounce(stakeAmount, 500)
 
   const color = useColorModeValue("blue.500", "cyan.500")
-  const toast = useToast()
 
   const {
     data: balanceInArka,
@@ -58,21 +62,13 @@ export const Staking = () => {
   })
 
   console.log("stakeAmount:", stakeAmount)
-  console.log("stakeAmount formatEther:", formatEther(stakeAmount || "0"))
+  console.log("stakeAmount formatEther:", parseEther(stakeAmount || "0"))
 
-  const { addressCurrentStake, finishAt, amountReward, arkaAlreadyStaked } = useCustomStaking({ address })
-
-  // Deposit on ArkaStaking
-  const {
-    isError: isErrorStakingDeposit,
-    error: errorStakingDeposit,
-    isLoading: isLoadingStakingDeposit,
-    isSuccess: isSuccessStakingDeposit,
-    write: writeStakingDeposit,
-  } = useCustomStakingDeposit({
-    addressCurrentStake,
-    stakeAmount: parseEther(debouncedStakeAmount || "0"),
+  const { addressCurrentStake, finishAt, amountReward, arkaAlreadyStaked, totalSupply } = useCustomReadStaking({
+    address,
   })
+
+  console.log("totalSupply:", totalSupply)
 
   // Approve on ArkaERC20
   const {
@@ -86,6 +82,17 @@ export const Staking = () => {
     stakeAmount: parseEther(debouncedStakeAmount || "0"),
   })
 
+  // Deposit on ArkaStaking
+  const {
+    isError: isErrorStakingDeposit,
+    error: errorStakingDeposit,
+    isLoading: isLoadingStakingDeposit,
+    isSuccess: isSuccessStakingDeposit,
+    write: writeStakingDeposit,
+  } = useCustomStakingDeposit({
+    addressCurrentStake,
+    stakeAmount: parseEther(debouncedStakeAmount || "0"),
+  })
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
     if (isErrorStakingDeposit) setErrors({ globalError: "Erreur lors de l'ajout d'Arka en staking" })
@@ -95,24 +102,12 @@ export const Staking = () => {
     if (isSuccessApprove) {
       writeStakingDeposit?.()
     }
-  }, [isSuccessApprove, writeStakingDeposit])
+  }, [isSuccessApprove])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    console.log("on va ajouter", debouncedStakeAmount)
-
-    try {
-      writeApprove?.()
-      toast({
-        title: "Arka ajoutés en staking",
-        duration: 5000,
-        isClosable: true,
-      })
-    } catch (error: unknown) {
-      console.error("Error while deposit ", error)
-      if (error instanceof Error) setErrors({ globalError: "Erreur lors de l'ajout d'Arka en staking 😣" })
-    }
+    writeApprove?.()
   }
 
   /*
@@ -188,7 +183,7 @@ export const Staking = () => {
                 <Text fontSize="lg">
                   Vous avez déjà staké{" "}
                   <Text as="span" color={color} ml="3">
-                    {ethers.utils.formatEther(arkaAlreadyStaked)} {ethers.constants.EtherSymbol}
+                    {ethers.utils.formatEther(arkaAlreadyStaked)} ARKA
                   </Text>
                 </Text>
               )}

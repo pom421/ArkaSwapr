@@ -164,7 +164,7 @@ contract ArkaStaking is Ownable {
      * @dev Function to transfer the unclaimed rewards to the master contract and not lose tokens.
      */
     function transferUnclaimedReward() external onlyOwner {
-        require(block.timestamp > finishAt, "not finished yet");
+        require(block.timestamp > finishAt, "The staking is not finished yet");
         (bool sent, ) = owner().call{value: address(this).balance}("");
         require(sent, "Failed to send Ether");
 

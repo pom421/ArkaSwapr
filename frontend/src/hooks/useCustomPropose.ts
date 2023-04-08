@@ -14,6 +14,7 @@ export const useCustomPropose = ({ description, url, priceInWei }: Props) => {
     isError: isErrorPrepare,
     error: errorPrepare,
   } = usePrepareArkaMasterProposeResource({
+    enabled: Boolean(description) && Boolean(url),
     args: [description, url],
     overrides: {
       value: priceInWei,
