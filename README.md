@@ -49,7 +49,7 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ```
 
 <details>
-<summary>Couverture au 8 avril 2023</summary>
+<summary>Résulat des tests au 8 avril 2023</summary>
 <pre>
   ArkaERC20
     ✔ sets correctly the address of ArkaMaster, test storage (1857ms)
@@ -92,19 +92,21 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 
 
   26 passing (3s)
+  </pre>
+</details>
 
-----------------------|----------|----------|----------|----------|----------------|
-File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
-----------------------|----------|----------|----------|----------|----------------|
- contracts/           |    88.89 |       66 |     91.3 |    91.43 |                |
-  ArkaERC20.sol       |      100 |       75 |      100 |      100 |                |
-  ArkaMaster.sol      |    94.74 |       85 |    88.89 |       96 |            102 |
-  ArkaStaking.sol     |    80.95 |       50 |    88.89 |    86.84 |... 187,188,191 |
-  ChainlinkEthUsd.sol |      100 |      100 |      100 |      100 |                |
-----------------------|----------|----------|----------|----------|----------------|
-All files             |    88.89 |       66 |     91.3 |    91.43 |                |
-----------------------|----------|----------|----------|----------|----------------|
-</pre>
+<details>
+<summary>Couverture des tests au 8 avril 2023</summary>
+|File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
+|----------------------|----------|----------|----------|----------|----------------|
+| contracts/           |    88.89 |       66 |     91.3 |    91.43 |                |
+|  ArkaERC20.sol       |      100 |       75 |      100 |      100 |                |
+|  ArkaMaster.sol      |    94.74 |       85 |    88.89 |       96 |            102 |
+|  ArkaStaking.sol     |    80.95 |       50 |    88.89 |    86.84 |... 187,188,191 |
+|  ChainlinkEthUsd.sol |      100 |      100 |      100 |      100 |                |
+|----------------------|----------|----------|----------|----------|----------------|
+|All files             |    88.89 |       66 |     91.3 |    91.43 |                |
+|----------------------|----------|----------|----------|----------|----------------|
 </details>
 
 ### Générer les types et les hooks de Wagmi
