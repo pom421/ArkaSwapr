@@ -1,6 +1,6 @@
 import { ConnectedUserOnly } from "@/components/ConnectedUserOnly"
 import Layout from "@/components/Layout"
-import Propose from "@/components/Propose/propose"
+import Propose from "@/components/Propose/Propose"
 import { ReactElement } from "react"
 
 export default function ExplorePage() {
