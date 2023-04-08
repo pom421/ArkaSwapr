@@ -1,5 +1,5 @@
 import { anyValue } from "@nomicfoundation/hardhat-chai-matchers/withArgs";
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { ethers } from "hardhat";
 
@@ -12,6 +12,8 @@ export enum InteractionType {
   unlike,
   toxic,
 }
+
+const ONE_HOUR = 3600
 
 describe("ArkaMaster", function () {
   async function deployArkaContracts() {
@@ -279,6 +281,84 @@ describe("ArkaMaster", function () {
       await expect(
         arkaMaster.startNewStake(priceForProposalInWei)
       ).to.be.revertedWith("Not enough funds");
+    });
+  });
+
+  describe("ArkaMaster.endNewContract", function () {
+    it("ends correctly a contract, test storage", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      expect(await ethers.provider.getBalance(arkaMaster.address)).to.be.equal(
+        priceForProposalInWei.mul(2)
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+
+      expect(await ethers.provider.getBalance(arkaMaster.address)).to.be.equal(
+        priceForProposalInWei
+      );
+
+      // Increase time to 1 hour to be after the duration of the stake.
+      await time.increase(ONE_HOUR);
+
+      await arkaMaster.endCurrentStake();
+
+      expect(await ethers.provider.getBalance(arkaMaster.address)).to.be.equal(
+        priceForProposalInWei.mul(2)
+      );
+    });
+    it("ends correctly a contract, test storage on currentStake reference", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+
+      // Increase time to 1 hour to be after the duration of the stake.
+      await time.increase(ONE_HOUR);
+
+      await arkaMaster.endCurrentStake();
+
+      expect(await arkaMaster.currentStake()).to.be.equal(
+        ethers.constants.AddressZero
+      );
+    });
+    it("ends correctly a contract, test event", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+
+      // Increase time to 1 hour to be after the duration of the stake.
+      await time.increase(ONE_HOUR);
+
+      await expect(arkaMaster.endCurrentStake()).to.emit(
+        arkaMaster,
+        "EndStake"
+      );
+    });
+    it("ends incorrectly a contract bc a current is already here, test require", async function () {
+      const { arkaMaster } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await expect(arkaMaster.endCurrentStake()).to.be.revertedWith(
+        "No stake is running"
+      );
+    });
+    it("ends incorrectly a contract bc the current stake is not finished, test require", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+
+      await expect(arkaMaster.endCurrentStake()).to.be.revertedWith(
+        "Stake is not finished"
+      );
     });
   });
 });

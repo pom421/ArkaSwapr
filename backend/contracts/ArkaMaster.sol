@@ -190,10 +190,10 @@ contract ArkaMaster is Ownable {
      */
     function endCurrentStake() external onlyOwner {
         require(address(currentStake) != address(0), "No stake is running");
-        // require(
-        //     currentStake.finishAt() < block.timestamp,
-        //     "Stake is not finished"
-        // );
+        require(
+            currentStake.finishAt() < block.timestamp,
+            "Stake is not finished"
+        );
 
         // require(
         //     address(currentStake).balance == 0,

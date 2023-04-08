@@ -171,7 +171,9 @@ contract ArkaStaking {
             "Only owner can transfer unclaimed rewards"
         );
         require(block.timestamp > finishAt, "The staking is not finished yet");
+
         (bool sent, ) = owner.call{value: address(this).balance}("");
+
         require(sent, "Failed to send Ether");
 
         emit TransferUnclaimedReward();
