@@ -97,6 +97,7 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 
 <details>
 <summary>Couverture des tests au 8 avril 2023</summary>
+<pre>
 |File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 |----------------------|----------|----------|----------|----------|----------------|
 | contracts/           |    88.89 |       66 |     91.3 |    91.43 |                |
@@ -107,6 +108,7 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 |----------------------|----------|----------|----------|----------|----------------|
 |All files             |    88.89 |       66 |     91.3 |    91.43 |                |
 |----------------------|----------|----------|----------|----------|----------------|
+</pre>
 </details>
 
 ### Générer les types et les hooks de Wagmi
