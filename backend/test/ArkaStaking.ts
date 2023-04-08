@@ -1,4 +1,4 @@
-import { loadFixture } from "@nomicfoundation/hardhat-network-helpers";
+import { loadFixture, time } from "@nomicfoundation/hardhat-network-helpers";
 import { expect } from "chai";
 import { parseEther } from "ethers/lib/utils";
 import { ethers } from "hardhat";
@@ -15,7 +15,7 @@ export enum InteractionType {
 
 const ONE_HOUR = 3600;
 
-describe("ArkaMaster - ArkaStaking", function () {
+describe("ArkaStaking", function () {
   async function deployArkaContracts() {
     // Contracts are deployed using the first signer/account by default
     const [owner, account1] = await ethers.getSigners();
@@ -101,7 +101,7 @@ describe("ArkaMaster - ArkaStaking", function () {
     };
   }
 
-  describe("ArkaStaking tests - deposit", function () {
+  describe("ArkaStaking.deposit", function () {
     it("deposits incorrectly with zero ARKA, test storage", async function () {
       const { arkaERC20, arkaMaster, account1 } = await loadFixture(
         deployArkaContractsWithNewStake
@@ -174,22 +174,50 @@ describe("ArkaMaster - ArkaStaking", function () {
         .to.emit(arkaStaking, "Deposit")
         .withArgs(account1.address, parseEther("2.5"));
     });
-    it("interacts correctly with a resource, test storage", async function () {
-      const { arkaMaster, account1 } = await loadFixture(deployArkaContracts);
-  
-      const lastId = await arkaMaster.getResourceLength();
-  
-      const price = await arkaMaster.getPriceForProposalInWei();
-  
-      await arkaMaster.proposeResource("description", "url", {
-        value: price,
-      });
-  
-      await arkaMaster.connect(account1).interact(lastId, 0);
-  
-      expect(await arkaMaster.getInteraction(lastId, account1.address)).to.equal(
-        0
+  });
+
+  describe("ArkaStaking.withdraw", function () {
+    it("withdraw correctly, test storage", async function () {
+      const { arkaStaking, arkaERC20, account1 } = await loadFixture(
+        deployArkaContractsWithNewStake
       );
+
+      // Account1 approves next to arkaERC20 contract to spend 2 ARKA.
+      await arkaERC20
+        .connect(account1)
+        .approve(arkaStaking.address, ethers.utils.parseEther("2.5"));
+
+      await arkaStaking.connect(account1).deposit(parseEther("2.5"));
+
+      await time.increase(ONE_HOUR);
+
+      await arkaStaking.connect(account1).withdraw();
+
+      expect(await arkaERC20.balanceOf(account1.address)).to.be.equal(
+        parseEther("4")
+      );
+
+      expect(await arkaStaking.totalSupply()).to.be.eq(0);
+
+      expect(await arkaStaking.stakeBalanceOf(account1.address)).to.be.eq(0);
+    });
+    it("withdraw correctly, test event", async function () {
+      const { arkaStaking, arkaERC20, account1 } = await loadFixture(
+        deployArkaContractsWithNewStake
+      );
+
+      // Account1 approves next to arkaERC20 contract to spend 2 ARKA.
+      await arkaERC20
+        .connect(account1)
+        .approve(arkaStaking.address, ethers.utils.parseEther("2.5"));
+
+      await arkaStaking.connect(account1).deposit(parseEther("2.5"));
+
+      await time.increase(ONE_HOUR);
+
+      await expect(arkaStaking.connect(account1).withdraw())
+        .to.emit(arkaStaking, "Withdraw")
+        .withArgs(account1.address);
     });
   });
 });

@@ -5,7 +5,7 @@ import { ethers } from "hardhat";
 
 const CHAIN_LINK_ADDRESS = "0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419"; // Mainnet
 
-describe("ArkaMaster", function () {
+describe("ArkaERC20", function () {
   async function deployArkaContracts() {
     // Contracts are deployed using the first signer/account by default
     const [owner, account1] = await ethers.getSigners();
@@ -40,29 +40,27 @@ describe("ArkaMaster", function () {
     };
   }
 
-  describe("ArkaERC20 tests", function () {
-    it("sets correctly the address of ArkaMaster, test storage", async function () {
-      const { arkaERC20, arkaMaster } = await loadFixture(deployArkaContracts);
-      await arkaERC20.setArkaMaster(arkaMaster.address);
+  it("sets correctly the address of ArkaMaster, test storage", async function () {
+    const { arkaERC20, arkaMaster } = await loadFixture(deployArkaContracts);
+    await arkaERC20.setArkaMaster(arkaMaster.address);
 
-      expect(await arkaERC20.arkaMaster()).to.equal(arkaMaster.address);
-    });
-    it("sets incorrectly the arkaMaster's address but he is not owner, test revert", async function () {
-      const { account1, arkaERC20, arkaMaster } = await loadFixture(
-        deployArkaContracts
-      );
+    expect(await arkaERC20.arkaMaster()).to.equal(arkaMaster.address);
+  });
+  it("sets incorrectly the arkaMaster's address but he is not owner, test revert", async function () {
+    const { account1, arkaERC20, arkaMaster } = await loadFixture(
+      deployArkaContracts
+    );
 
-      await expect(
-        arkaERC20.connect(account1).setArkaMaster(arkaMaster.address)
-      ).to.be.revertedWith("Ownable: caller is not the owner");
-    });
+    await expect(
+      arkaERC20.connect(account1).setArkaMaster(arkaMaster.address)
+    ).to.be.revertedWith("Ownable: caller is not the owner");
+  });
 
-    it("has the right initial supply, test storage", async function () {
-      const { arkaERC20 } = await loadFixture(deployArkaContracts);
+  it("has the right initial supply, test storage", async function () {
+    const { arkaERC20 } = await loadFixture(deployArkaContracts);
 
-      expect(await arkaERC20.totalSupply()).to.equal(
-        BigNumber.from("1000000000000000000")
-      );
-    });
+    expect(await arkaERC20.totalSupply()).to.equal(
+      BigNumber.from("1000000000000000000")
+    );
   });
 });
