@@ -50,8 +50,6 @@ export const useResourcesFromEvent = () => {
   useArkaMasterResourceProposedEvent({
     // @ts-ignore
     listener(description, url, endDate) {
-      console.log("watchEvent", description, url, endDate)
-
       // Remove potential duplicates.
       const newResources = uniqBy([...resources, { description, url, endDate }], (resource) =>
         [resource.description, resource.url, resource.endDate].join(""),

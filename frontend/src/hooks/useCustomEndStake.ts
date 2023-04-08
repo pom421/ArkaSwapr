@@ -11,7 +11,6 @@ type Props = {
  * @param enabled Whether the hook is enabled or not
  */
 export const useCustomEndStake = ({ enabled = true }: Props = {}) => {
-  console.log("enabled", enabled)
   const {
     config,
     isError: isErrorPrepare,

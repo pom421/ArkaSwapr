@@ -35,9 +35,7 @@ const RetrievePage = () => {
       const filters = storageContract.filters.ValueStored()
 
       if (filters && storageContract) {
-        console.log("storageContract:", storageContract)
         const allEvents = await storageContract.queryFilter(filters, 0, "latest")
-        console.log("allEvents", allEvents)
 
         setAllValuesFromEvent(allEvents.map((event) => BigInt(event.args?.[0]).toString()))
       }
@@ -49,7 +47,6 @@ const RetrievePage = () => {
   useStorageValueStoredEvent({
     // @ts-ignore
     listener(node, label, owner) {
-      console.log("watchEvent from customHook", node, label, owner)
       // setLastValueFromEvent(BigInt(node).toString())
       setAllValuesFromEvent((events) => [...events, BigInt(node).toString()])
     },

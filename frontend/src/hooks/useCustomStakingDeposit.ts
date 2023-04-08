@@ -1,7 +1,6 @@
 import { useArkaStakingDeposit, usePrepareArkaStakingDeposit } from "@/generated"
 import { isAddressZero } from "@/utils/contract"
 import { BigNumber } from "ethers"
-import { formatEther } from "ethers/lib/utils.js"
 import { Address, useWaitForTransaction } from "wagmi"
 
 type Props = {
@@ -9,9 +8,6 @@ type Props = {
   addressCurrentStake?: Address
 }
 export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Props) => {
-  console.log("XXX", formatEther(stakeAmount))
-  console.log("YYY", stakeAmount.eq(0))
-
   const {
     config,
     isError: isErrorPrepare,
@@ -26,9 +22,6 @@ export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Pr
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,
   })
-
-  console.log("errorPrepare:", errorPrepare)
-  console.log("error:", error)
 
   return {
     isError: isErrorPrepare || isError,

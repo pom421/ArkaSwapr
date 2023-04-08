@@ -3,6 +3,7 @@ import { useCustomArkaERC20Approve } from "@/hooks/useCustomArkaERC20Approve"
 import { useCustomReadStaking } from "@/hooks/useCustomReadStaking"
 import { useCustomStakingDeposit } from "@/hooks/useCustomStakingDeposit"
 import useDebounce from "@/hooks/useDebounce"
+import { isFinisdhedStake } from "@/utils/contract"
 import { formatTimestamp } from "@/utils/date"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
@@ -28,7 +29,7 @@ import {
   useColorModeValue
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
-import { BigNumber, ethers } from "ethers"
+import { ethers } from "ethers"
 import { parseEther } from "ethers/lib/utils.js"
 import { FormEvent, useEffect, useState } from "react"
 import { useAccount } from "wagmi"
@@ -61,14 +62,9 @@ export const Staking = () => {
     watch: true,
   })
 
-  console.log("stakeAmount:", stakeAmount)
-  console.log("stakeAmount formatEther:", parseEther(stakeAmount || "0"))
-
-  const { addressCurrentStake, finishAt, amountReward, arkaAlreadyStaked, totalSupply } = useCustomReadStaking({
+  const { addressCurrentStake, finishAt, amountReward, arkaAlreadyStaked } = useCustomReadStaking({
     address,
   })
-
-  console.log("totalSupply:", totalSupply)
 
   // Approve on ArkaERC20
   const {
@@ -128,10 +124,6 @@ export const Staking = () => {
   - vérifier dans Remix que le stakedBalanceOf est bien mis à jour
 
   */
-
-  const isFinisdhedStake = (timestamp: BigNumber) => {
-    return timestamp.toNumber() * 1000 < new Date().getTime()
-  }
 
   return (
     <main>

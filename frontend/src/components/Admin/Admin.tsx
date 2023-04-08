@@ -3,7 +3,8 @@ import { useCustomEndStake } from "@/hooks/useCustomEndStake"
 import { useCustomNewStake } from "@/hooks/useCustomNewStake"
 import { useCustomReadStaking } from "@/hooks/useCustomReadStaking"
 import useDebounce from "@/hooks/useDebounce"
-import { isAddressZero } from "@/utils/contract"
+import { isAddressZero, isFinisdhedStake } from "@/utils/contract"
+import { formatTimestamp } from "@/utils/date"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
@@ -45,10 +46,7 @@ export const Admin = () => {
   const color = useColorModeValue("blue.500", "cyan.500")
 
   // Get current stake address, if any and its total suply.
-
-  const { addressCurrentStake, totalSupply } = useCustomReadStaking()
-
-  console.log("addressCurrentStake", addressCurrentStake)
+  const { addressCurrentStake, finishAt, totalSupply } = useCustomReadStaking()
 
   // Get balance in ETH of ArkaMaster contract.
   const {
@@ -59,8 +57,6 @@ export const Admin = () => {
     address: ArkaMasterContractAddress,
     watch: true,
   })
-
-  console.log("rewardAmount:", rewardAmount)
 
   // Get helpers for creating a new stake.
   const {
@@ -82,8 +78,6 @@ export const Admin = () => {
     isSuccess: isSuccessEndStake,
     write: writeEndStake,
   } = useCustomEndStake({ enabled: !isAddressZero(addressCurrentStake) })
-
-  console.log("errorEndStake:", errorEndStake)
 
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
@@ -160,15 +154,27 @@ export const Admin = () => {
                   {formatEther(totalSupply || "0")} ARKA
                 </Text>
               </Text>
-              <Button
-                mt="8"
-                type="submit"
-                size="lg"
-                disabled={!writeEndStake || isLoadingEndStake}
-                onClick={writeEndStake}
-              >
-                Terminer le stake
-              </Button>
+              {finishAt && (
+                <Text fontSize="lg">
+                  {isFinisdhedStake(finishAt)
+                    ? "Le stake en cours s'est terminé le "
+                    : "Le stake en cours se termine le "}
+                  <Text as="span" color={color} ml="3">
+                    {finishAt ? formatTimestamp(finishAt) : ""}
+                  </Text>
+                </Text>
+              )}
+              {finishAt && !isFinisdhedStake(finishAt) && (
+                <Button
+                  mt="8"
+                  type="submit"
+                  size="lg"
+                  disabled={!writeEndStake || isLoadingEndStake}
+                  onClick={writeEndStake}
+                >
+                  Terminer le stake
+                </Button>
+              )}
             </>
           ) : (
             <form onSubmit={handleSubmit}>
