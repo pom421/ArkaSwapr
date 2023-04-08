@@ -4,6 +4,8 @@ Un protocole pour récompenser l'attention des utilisateurs sur des ressources.
 
 La stack technique repose sur hardhat, côté backend et Next.js côté front (via `npx create next-app --typescript`), avec wagmi/ethers.js et Chakra UI.
 
+<img width="1493" alt="image" src="https://user-images.githubusercontent.com/3749428/230745140-6a953d40-3778-4406-92cc-0036ee82adbe.png">
+
 ### Démo sur Sepolia
 
 https://arka-swapr.vercel.app/
