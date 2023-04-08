@@ -23,18 +23,21 @@ export const useCustomReadStaking = ({ address = ethers.constants.AddressZero }:
   const { data: totalSupply } = useArkaStakingTotalSupply({
     address: addressCurrentStake,
     enabled: !isAddressZero(addressCurrentStake),
+    watch: true,
   })
 
   // Current stake finish date
   const { data: finishAt } = useArkaStakingFinishAt({
     address: addressCurrentStake,
     enabled: !isAddressZero(addressCurrentStake),
+    watch: true,
   })
 
   // Current stake reward amount
   const { data: amountReward } = useArkaStakingAmountReward({
     address: addressCurrentStake,
     enabled: !isAddressZero(addressCurrentStake),
+    watch: true,
   })
 
   // Get current stake balance of user

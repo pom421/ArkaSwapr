@@ -77,7 +77,7 @@ export const Admin = () => {
     isLoading: isLoadingEndStake,
     isSuccess: isSuccessEndStake,
     write: writeEndStake,
-  } = useCustomEndStake({ enabled: !isAddressZero(addressCurrentStake) })
+  } = useCustomEndStake({ enabled: finishAt && isFinisdhedStake(finishAt) })
 
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
@@ -164,16 +164,22 @@ export const Admin = () => {
                   </Text>
                 </Text>
               )}
-              {finishAt && !isFinisdhedStake(finishAt) && (
-                <Button
-                  mt="8"
-                  type="submit"
-                  size="lg"
-                  disabled={!writeEndStake || isLoadingEndStake}
-                  onClick={writeEndStake}
-                >
-                  Terminer le stake
-                </Button>
+              {finishAt && isFinisdhedStake(finishAt) && (
+                <>
+                  <pre>Write ? {JSON.stringify({ writeEndStake }, null, 2)}</pre>
+                  <br />
+                  <pre>isLoadingEndStake?: {JSON.stringify(isLoadingEndStake, null, 2)}</pre>
+                  <Button
+                    mt="8"
+                    type="submit"
+                    size="lg"
+                    disabled={!writeEndStake || isLoadingEndStake}
+                    onClick={writeEndStake}
+                    title="Clore le stake et rapatrier les récompenses non distribuées"
+                  >
+                    Clore le stake
+                  </Button>
+                </>
               )}
             </>
           ) : (

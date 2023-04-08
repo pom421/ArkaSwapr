@@ -1,4 +1,4 @@
-export const ArkaMasterContractAddress = "0x6DcBc91229d812910b54dF91b5c2b592572CD6B0"
+export const ArkaMasterContractAddress = "0x6484EB0792c646A4827638Fc1B6F20461418eB00"
 
 export const ArkaMasterContractAbi = [
   {
@@ -21,6 +21,25 @@ export const ArkaMasterContractAbi = [
     anonymous: false,
     inputs: [],
     name: "EndStake",
+    type: "event",
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: "address",
+        name: "sender",
+        type: "address",
+      },
+      {
+        indexed: false,
+        internalType: "uint256",
+        name: "amount",
+        type: "uint256",
+      },
+    ],
+    name: "EthReceived",
     type: "event",
   },
   {
@@ -371,5 +390,9 @@ export const ArkaMasterContractAbi = [
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
+  },
+  {
+    stateMutability: "payable",
+    type: "receive",
   },
 ] as const
