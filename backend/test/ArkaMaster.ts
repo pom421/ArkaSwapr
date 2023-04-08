@@ -49,6 +49,44 @@ describe("ArkaMaster", function () {
       priceForProposalInWei,
     };
   }
+  async function deployArkaContractsWithProposals() {
+    const {
+      owner,
+      account1,
+      oracle,
+      arkaERC20,
+      arkaMaster,
+      priceForProposalInWei,
+    } = await loadFixture(deployArkaContracts);
+
+    const lastId = await arkaMaster.getResourceLength();
+
+    const price = await arkaMaster.getPriceForProposalInWei();
+
+    const description1 = "FooBar site";
+    const description2 = "AbraCadabra site";
+    const url1 = "https://foobar.com";
+    const url2 = "https://abracada.bra";
+
+    await arkaMaster.connect(account1).proposeResource(description1, url1, {
+      value: price,
+    });
+
+    await arkaMaster.connect(account1).proposeResource(description2, url2, {
+      value: price,
+    });
+
+    // Here, we have fund the contract with the value of 2 proposals price
+
+    return {
+      owner,
+      account1,
+      oracle,
+      arkaERC20,
+      arkaMaster,
+      priceForProposalInWei,
+    };
+  }
 
   describe("Oracle tests", function () {
     it("gets a non 0 result for EHT USD price, test integration chain link", async function () {
@@ -187,6 +225,60 @@ describe("ArkaMaster", function () {
           arkaMaster.connect(account1).interact(lastId, InteractionType.like)
         ).to.be.revertedWith("You already add interaction on this resource");
       });
+    });
+  });
+
+  describe("ArkaMaster.startNewContract", function () {
+    it("starts correctly a contract, test storage", async function () {
+      const { arkaMaster, account1, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+      expect(await arkaMaster.currentStake()).to.be.equal(
+        ethers.constants.AddressZero
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+
+      expect(await arkaMaster.currentStake()).to.not.be.equal(
+        ethers.constants.AddressZero
+      );
+    });
+    it("starts correctly a contract, test event", async function () {
+      const { arkaMaster, account1, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await expect(arkaMaster.startNewStake(priceForProposalInWei))
+        .to.emit(arkaMaster, "NewStake")
+        .withArgs(priceForProposalInWei);
+    });
+    it("starts incorrectly a contract bc previous stake exists, test require", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await arkaMaster.startNewStake(priceForProposalInWei);
+      await expect(
+        arkaMaster.startNewStake(priceForProposalInWei)
+      ).to.be.revertedWith("A stake is already running");
+    });
+    it("starts incorrectly a contract bc amount is 0, test require", async function () {
+      const { arkaMaster } = await loadFixture(
+        deployArkaContractsWithProposals
+      );
+
+      await expect(arkaMaster.startNewStake(0)).to.be.revertedWith(
+        "Amount must be > 0"
+      );
+    });
+    it("starts incorrectly a contract bc amount is 0, test require", async function () {
+      const { arkaMaster, priceForProposalInWei } = await loadFixture(
+        deployArkaContracts // there is no proposal so no funds in contract to start a stake
+      );
+
+      await expect(
+        arkaMaster.startNewStake(priceForProposalInWei)
+      ).to.be.revertedWith("Not enough funds");
     });
   });
 });

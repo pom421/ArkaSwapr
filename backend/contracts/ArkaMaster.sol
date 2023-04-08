@@ -72,10 +72,15 @@ contract ArkaMaster is Ownable {
     event ResourceProposed(string description, string url, uint endDate);
     event NewStake(uint amountReward);
     event EndStake();
+    event EthReceived(address sender, uint amount);
 
     constructor(address _arkaToken, address _priceFeedEthUsd) {
         arkaToken = ArkaERC20(_arkaToken);
         priceFeedEthUsd = ChainlinkEthUsd(_priceFeedEthUsd);
+    }
+
+    receive() external payable {
+        emit EthReceived(msg.sender, msg.value);
     }
 
     /**
@@ -165,7 +170,6 @@ contract ArkaMaster is Ownable {
      * @param _amountReward Amount of ETH to be sent to the new stake contract
      */
     function startNewStake(uint _amountReward) external onlyOwner {
-        console.log("startNewStake", _amountReward);
         require(
             address(currentStake) == address(0),
             "A stake is already running"

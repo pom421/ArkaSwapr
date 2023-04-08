@@ -2,7 +2,7 @@
 
 pragma solidity ^0.8.18;
 
-import "@openzeppelin/contracts/access/Ownable.sol";
+// import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "hardhat/console.sol";
 
@@ -11,7 +11,8 @@ import "hardhat/console.sol";
  * @author Po Mauguet
  * @notice This contract is used for staking and rewarding of ArkaSwapr.
  */
-contract ArkaStaking is Ownable {
+contract ArkaStaking {
+    address payable owner;
     IERC20 public immutable arkaToken;
 
     /**
@@ -45,6 +46,7 @@ contract ArkaStaking is Ownable {
     event TransferUnclaimedReward();
 
     constructor(address _stakingToken) payable {
+        owner = payable(msg.sender);
         arkaToken = IERC20(_stakingToken);
 
         duration = 10 minutes;
@@ -163,9 +165,13 @@ contract ArkaStaking is Ownable {
     /**
      * @dev Function to transfer the unclaimed rewards to the master contract and not lose tokens.
      */
-    function transferUnclaimedReward() external onlyOwner {
+    function transferUnclaimedReward() external {
+        require(
+            msg.sender == owner,
+            "Only owner can transfer unclaimed rewards"
+        );
         require(block.timestamp > finishAt, "The staking is not finished yet");
-        (bool sent, ) = owner().call{value: address(this).balance}("");
+        (bool sent, ) = owner.call{value: address(this).balance}("");
         require(sent, "Failed to send Ether");
 
         emit TransferUnclaimedReward();
