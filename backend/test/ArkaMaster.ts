@@ -13,7 +13,7 @@ export enum InteractionType {
   toxic,
 }
 
-const ONE_HOUR = 3600
+const ONE_HOUR = 3600;
 
 describe("ArkaMaster", function () {
   async function deployArkaContracts() {
@@ -60,8 +60,6 @@ describe("ArkaMaster", function () {
       arkaMaster,
       priceForProposalInWei,
     } = await loadFixture(deployArkaContracts);
-
-    const lastId = await arkaMaster.getResourceLength();
 
     const price = await arkaMaster.getPriceForProposalInWei();
 

@@ -20,24 +20,49 @@ contract ArkaStaking {
      */
     uint public amountReward;
 
-    // Duration of rewards to be paid out in seconds
+    /**
+     * @notice Duration of rewards to be paid out in seconds
+     */
     uint public duration;
-    // Timestamp of when the rewards finish
+
+    /**
+     * @notice Timestamp of when the rewards finish
+     */
     uint public finishAt;
-    // Minimum of last updated time and reward finish time
+
+    /**
+     * @notice Minimum of last updated time and reward finish time
+     */
     uint public updatedAt;
-    // Reward to be paid out per second
+
+    /**
+     * @notice Reward to be paid out per second
+     */
     uint public rewardRate;
-    // Sum of (reward rate * duration * 1e18 / total supply)
+
+    /**
+     * @notice Sum of (reward rate * duration * 1e18 / total supply)
+     */
     uint public rewardPerToken;
-    // Total staked
+
+    /**
+     * @notice Total staked
+     */
     uint public totalSupply;
 
-    // User address => rewardPerToken
+    /**
+     * @notice User address => rewardPerToken
+     */
     mapping(address => uint) public userRewardPerTokenPaid;
-    // User address => rewards to be claimed
+
+    /**
+     * @notice User address => rewards to be claimed
+     */
     mapping(address => uint) public rewards;
-    // User address => staked amount
+
+    /**
+     * @notice User address => staked amount
+     */
     mapping(address => uint) public stakeBalanceOf;
 
     event Deposit(address indexed user, uint amount);
@@ -64,7 +89,6 @@ contract ArkaStaking {
     }
 
     /**
-     *
      * @dev Modifier to update the reward of a user.
      * @param _account The user to update the reward for.
      *
@@ -72,8 +96,6 @@ contract ArkaStaking {
      * @notice Also, it updates the rewardPerToken and updatedAt variables.
      */
     modifier updateReward(address _account) {
-        console.log("dans updateReward");
-
         rewardPerToken = _calculateRewardPerToken();
         updatedAt = _lastTimeRewardApplicable();
 
@@ -128,11 +150,14 @@ contract ArkaStaking {
                     userRewardPerTokenPaid[_account])) / 1e18);
     }
 
-    // deposit
+    /**
+     * @notice This function is used to stake ARKA tokens.
+     *
+     * @param _amount The amount of ARKA to deposit.
+     */
     function deposit(uint _amount) external updateReward(msg.sender) {
-        console.log("dans deposit", msg.sender, _amount);
-
         require(_amount > 0, "amount = 0");
+        // The user needs to approve next to arkaToken before this transfer.
         arkaToken.transferFrom(msg.sender, address(this), _amount);
         stakeBalanceOf[msg.sender] += _amount;
         totalSupply += _amount;
@@ -140,7 +165,9 @@ contract ArkaStaking {
         emit Deposit(msg.sender, _amount);
     }
 
-    // withdraw
+    /**
+     * @notice This function is used to withdraw ARKA tokens.
+     */
     function withdraw() external updateReward(msg.sender) {
         arkaToken.transfer(msg.sender, stakeBalanceOf[msg.sender]);
         totalSupply -= stakeBalanceOf[msg.sender];
@@ -149,7 +176,9 @@ contract ArkaStaking {
         emit Withdraw(msg.sender);
     }
 
-    // claimReward
+    /**
+     * @notice This function is used to claim the reward when the staking is finished.
+     */
     function claimReward() external updateReward(msg.sender) {
         if (rewards[msg.sender] > 0) {
             (bool sent, ) = payable(msg.sender).call{
@@ -163,7 +192,7 @@ contract ArkaStaking {
     }
 
     /**
-     * @dev Function to transfer the unclaimed rewards to the master contract and not lose tokens.
+     * @notice Function to transfer the unclaimed rewards to the master contract and not lose tokens.
      */
     function transferUnclaimedReward() external {
         require(
