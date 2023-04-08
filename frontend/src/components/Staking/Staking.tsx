@@ -38,12 +38,6 @@ type FormProps = {
   stakeAmount?: string
 }
 
-/*
-  TODO: le approve fonctionne !
-  En revanche, ensuite il ya  une boucle infinie en React, qui doit vouloir faire le deposit.
-  Je peux aussi faire 2 boutons si ça peut aider.
- */
-
 export const Staking = () => {
   const [parent] = useAutoAnimate()
   const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
