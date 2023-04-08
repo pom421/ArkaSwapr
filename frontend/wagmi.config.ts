@@ -2,18 +2,12 @@ import { ArkaERC20Abi, ArkaERC20Address } from "@/contracts/ArkaERC20"
 import { ArkaMasterContractAbi, ArkaMasterContractAddress } from "@/contracts/ArkaMaster"
 import { ArkaStakingAbi } from "@/contracts/ArkaStaking"
 import { ChainlinkEthUsdAbi, ChainlinkEthUsdAddress } from "@/contracts/ChainlinkEthUsd"
-import { StoreContractAbi, StoreContractAddress } from "@/contracts/Storage"
 import { defineConfig } from "@wagmi/cli"
 import { react } from "@wagmi/cli/plugins"
 
 export default defineConfig({
   out: "src/generated.ts",
   contracts: [
-    {
-      name: "Storage",
-      abi: StoreContractAbi,
-      address: StoreContractAddress,
-    },
     {
       name: "ArkaMaster",
       abi: ArkaMasterContractAbi,

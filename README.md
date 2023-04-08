@@ -49,20 +49,60 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ```
 
 <details>
-<summary>Couverture au 7 avril 2023</summary>
+<summary>Couverture au 8 avril 2023</summary>
 <pre>
+  ArkaERC20
+    ✔ sets correctly the address of ArkaMaster, test storage (1857ms)
+    ✔ sets incorrectly the arkaMaster's address but he is not owner, test revert
+    ✔ has the right initial supply, test storage
+
+  ArkaMaster
+    Oracle tests
+      ✔ gets a non 0 result for EHT USD price, test integration chain link (436ms)
+    ArkaMaster.proposeResource
+      ✔ proposes correctly a resource, test storage
+      ✔ proposes correctly a resource, test event
+      ✔ proposes incorrectly a resource with a lower price than asked, test revert
+    ArkaMaster.interact
+      ✔ interacts correctly with a resource, test storage
+      ✔ interacts correctly with a resource, test event (47ms)
+      ✔ interacts correctly with a resource, test mint
+      ✔ interacts incorrectly with a resource because already have interaction, test require
+    ArkaMaster.startNewContract
+      ✔ starts correctly a contract, test storage (154ms)
+      ✔ starts correctly a contract, test event
+      ✔ starts incorrectly a contract bc previous stake exists, test require
+      ✔ starts incorrectly a contract bc amount is 0, test require
+      ✔ starts incorrectly a contract bc amount is 0, test require
+    ArkaMaster.endNewContract
+      ✔ ends correctly a contract, test storage (64ms)
+      ✔ ends correctly a contract, test storage on currentStake reference
+      ✔ ends correctly a contract, test event
+      ✔ ends incorrectly a contract bc a current is already here, test require
+      ✔ ends incorrectly a contract bc the current stake is not finished, test require
+
+  ArkaStaking
+    ArkaStaking.deposit
+      ✔ deposits incorrectly with zero ARKA, test storage (580ms)
+      ✔ deposits correctly, test storage
+      ✔ deposits correctly, test event
+    ArkaStaking.withdraw
+      ✔ withdraw correctly, test storage
+      ✔ withdraw correctly, test event
+
+
+  26 passing (3s)
+
 ----------------------|----------|----------|----------|----------|----------------|
 File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 ----------------------|----------|----------|----------|----------|----------------|
- contracts/           |    37.74 |    25.93 |    48.15 |    34.18 |                |
+ contracts/           |    88.89 |       66 |     91.3 |    91.43 |                |
   ArkaERC20.sol       |      100 |       75 |      100 |      100 |                |
-  ArkaMaster.sol      |    52.63 |    27.78 |    66.67 |    54.17 |... 199,200,202 |
-  ArkaStaking.sol     |        0 |        0 |        0 |        0 |... 168,169,171 |
+  ArkaMaster.sol      |    94.74 |       85 |    88.89 |       96 |            102 |
+  ArkaStaking.sol     |    80.95 |       50 |    88.89 |    86.84 |... 187,188,191 |
   ChainlinkEthUsd.sol |      100 |      100 |      100 |      100 |                |
-  Lock.sol            |      100 |      100 |      100 |      100 |                |
-  Storage.sol         |        0 |      100 |        0 |        0 |       21,23,31 |
 ----------------------|----------|----------|----------|----------|----------------|
-All files             |    37.74 |    25.93 |    48.15 |    34.18 |                |
+All files             |    88.89 |       66 |     91.3 |    91.43 |                |
 ----------------------|----------|----------|----------|----------|----------------|
 </pre>
 </details>
