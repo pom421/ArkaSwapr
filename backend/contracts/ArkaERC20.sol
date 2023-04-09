@@ -10,17 +10,22 @@ import "@openzeppelin/contracts/access/Ownable.sol";
  * @dev An ERC20 token for Arka
  */
 contract ArkaERC20 is ERC20, Ownable {
+    /**
+     * @notice The initial supply of ARKA is 10^8.
+     */
     uint constant _initialSupply = 1000000000000000000;
 
+    /**
+     * @notice The address of the ArkaMaster contract.
+     */
     address public arkaMaster;
 
-    // constructor(uint256 initialSupply) ERC20("Arka", "ARK") {
     constructor() ERC20("Arka", "ARK") {
         _mint(msg.sender, _initialSupply);
     }
 
     /**
-     * @dev Setter to mean to the ERC20 which contract can mint tokens.
+     * @notice Setter to limit to arkaMaster the capacity to mint tokens.
      *
      * @param _arkaMaster The address of the ArkaMaster contract.
      */
@@ -28,6 +33,12 @@ contract ArkaERC20 is ERC20, Ownable {
         arkaMaster = _arkaMaster;
     }
 
+    /**
+     * @notice Mint tokens for a given account.
+     *
+     * @param _account The address of the account to mint tokens for.
+     * @param _amount The amount of tokens to mint.
+     */
     function mintArka(address _account, uint _amount) external {
         require(msg.sender == arkaMaster, "Only ArkaMaster can mint");
         _mint(_account, _amount);

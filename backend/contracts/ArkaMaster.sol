@@ -15,9 +15,14 @@ import "hardhat/console.sol";
  * @notice This contract is used for orchestrating all features of ArkaSwapr.
  */
 contract ArkaMaster is Ownable {
+    /**
+     * @notice The address of the ArkaERC20 contract.
+     */
     ArkaERC20 public immutable arkaToken;
 
-    // Price of ETH in USD from Chainlink.
+    /**
+     * @notice Address of Chainlink price feed for ETH/USD.
+     */
     ChainlinkEthUsd public priceFeedEthUsd;
 
     /**
@@ -26,18 +31,20 @@ contract ArkaMaster is Ownable {
     ArkaStaking public currentStake;
 
     /**
-     * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
+     * @notice The price of a proposal is 7 days of hosting on ArkaSwapr.
      * (unit16 gives us up to 65k USD)
+     *
+     * @dev Initial price in USD. May change in the future with a DAO to set this price.
      */
-    uint16 usdPrice7days = 10; // Initial price in USD. May change in the future with a DAO to set this price.
+    uint16 usdPrice7days = 10;
 
     /**
      * @dev The reward for interacting with a resource is 2 ARKA.
      */
-    uint amountArkaRewards = 2e18; // 2 ARKA
+    uint amountArkaRewards = 2e18;
 
     /**
-     * @notice A resource is a piece of content that can be liked, unliked, loved or toxic.
+     * @notice A resource is a piece of content that can be liked, unliked, loved or evaluated as toxic.
      */
     struct Resource {
         string description;
@@ -77,6 +84,9 @@ contract ArkaMaster is Ownable {
         priceFeedEthUsd = ChainlinkEthUsd(_priceFeedEthUsd);
     }
 
+    /**
+     * @dev This function is called when the contract receives ETH.
+     */
     receive() external payable {
         emit EthReceived(msg.sender, msg.value);
     }
@@ -101,7 +111,7 @@ contract ArkaMaster is Ownable {
     }
 
     /**
-     * @notice Get the resource length.
+     * @notice Get the resource length. Used to calculate the next index to attribute for next resource.
      */
     function getResourceLength() external view returns (uint) {
         return resources.length;

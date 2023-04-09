@@ -12,7 +12,14 @@ import "hardhat/console.sol";
  * @notice This contract is used for staking and rewarding of ArkaSwapr.
  */
 contract ArkaStaking {
+    /**
+     * @notice The address of arkaMaster.
+     */
     address payable owner;
+
+    /**
+     * @notice The address of the ArkaERC20 contract.
+     */
     IERC20 public immutable arkaToken;
 
     /**
@@ -108,17 +115,18 @@ contract ArkaStaking {
     }
 
     /**
+     * @notice This function is used to get the current time or finishAt at last.
+     *
      * @dev Current time or finishAt at last.
      * This is used to calculate the reward per token in defining period where total supply is constant.
-     * @notice This function is used to get the current time or finishAt at last.
      */
     function _lastTimeRewardApplicable() private view returns (uint) {
         return finishAt <= block.timestamp ? finishAt : block.timestamp;
     }
 
     /**
-     * @dev Function to calculate the reward per token for the current period. Global for all user at a given time.
      * @notice This function is used to calculate the reward per token for the current period.
+     * @dev Function to calculate the reward per token for the current period. Global for all user at a given time.
      *
      * @return The reward per token for the current period.
      */
@@ -134,8 +142,8 @@ contract ArkaStaking {
     }
 
     /**
-     * @dev Function to calculate the reward for a user until now.
      * @notice This function is used to calculate the reward for a user until now.
+     * @dev Function to calculate the reward for a user until now.
      *
      * @param _account The user to calculate the reward for.
      * @return The reward for a user until now.
