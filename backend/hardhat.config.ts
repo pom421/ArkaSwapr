@@ -1,4 +1,6 @@
 import "@nomicfoundation/hardhat-toolbox";
+import "@nomiclabs/hardhat-etherscan";
+
 import { HardhatUserConfig } from "hardhat/config";
 
 import { config as dotenvConfig } from "dotenv";
@@ -6,7 +8,7 @@ import { config as dotenvConfig } from "dotenv";
 dotenvConfig();
 
 // Load Infura project ID and account from .env file.
-const { INFURA_ID, ACCOUNT0_PRIVATE_KEY} = process.env;
+const { INFURA_ID, ACCOUNT0_PRIVATE_KEY } = process.env;
 
 console.log("INFURA_ID", INFURA_ID);
 
@@ -23,8 +25,12 @@ const config: HardhatUserConfig = {
     },
     sepolia: {
       url: `https://sepolia.infura.io/v3/${INFURA_ID}`,
-      accounts: [ACCOUNT0_PRIVATE_KEY || ""]
+      accounts: [ACCOUNT0_PRIVATE_KEY || ""],
     },
+  },
+  etherscan: {
+    // Your API key for Etherscan
+    apiKey: "52YBA6C963BBRCNTC1CQ6DS7NMY5HRN6VK",
   },
 };
 

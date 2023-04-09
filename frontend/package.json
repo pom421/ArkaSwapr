@@ -41,6 +41,7 @@
     "wagmi": "^0.12.10"
   },
   "devDependencies": {
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
     "@wagmi/cli": "^0.1.14"
   }
 }
