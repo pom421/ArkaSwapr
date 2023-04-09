@@ -81,7 +81,7 @@ contract ArkaStaking {
         owner = payable(msg.sender);
         arkaToken = IERC20(_stakingToken);
 
-        duration = 10 minutes;
+        duration = 3 minutes;
 
         // Set the amount of reward to be paid out.
         amountReward = msg.value;

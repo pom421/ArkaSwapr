@@ -168,9 +168,6 @@ export const Admin = () => {
               )}
               {finishAt && isFinisdhedStake(finishAt) && (
                 <>
-                  <pre>Write ? {JSON.stringify({ writeEndStake }, null, 2)}</pre>
-                  <br />
-                  <pre>isLoadingEndStake?: {JSON.stringify(isLoadingEndStake, null, 2)}</pre>
                   <Button
                     mt="8"
                     type="submit"
@@ -188,7 +185,7 @@ export const Admin = () => {
             <form onSubmit={handleSubmit}>
               <Flex direction="row" gap="4">
                 <FormControl isInvalid={Boolean(errors?.rewardAmount)}>
-                  <FormLabel fontSize="lg">Arka à staker (max: {balanceData?.formatted})</FormLabel>
+                  <FormLabel fontSize="lg">ETH à staker (max: {balanceData?.formatted})</FormLabel>
                   <NumberInput
                     name="rewardAmount"
                     placeholder="Amount"

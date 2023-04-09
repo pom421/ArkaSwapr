@@ -82,7 +82,9 @@ export const Staking = () => {
   } = useCustomStakingDeposit({
     addressCurrentStake,
     stakeAmount: parseEther(debouncedStakeAmount || "0"),
+    enabled: isSuccessApprove,
   })
+
   useEffect(() => {
     if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
     if (isErrorStakingDeposit) setErrors({ globalError: "Erreur lors de l'ajout d'Arka en staking" })

@@ -115,7 +115,7 @@ export const RowResource = ({ resource, index }: { resource: Resource; index: nu
           <div ref={parent}>
             {interaction !== InteractionType.unset && (
               <Flex gap="2" alignItems="center">
-                <Text color="green.400">+ 2 Arkas</Text>
+                <Text color="green.400">+ 2 ARKA</Text>
                 <CheckIcon color="green.400" />
               </Flex>
             )}

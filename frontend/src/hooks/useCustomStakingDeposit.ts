@@ -1,13 +1,13 @@
 import { useArkaStakingDeposit, usePrepareArkaStakingDeposit } from "@/generated"
-import { isAddressZero } from "@/utils/contract"
 import { BigNumber } from "ethers"
 import { Address, useWaitForTransaction } from "wagmi"
 
 type Props = {
   stakeAmount: BigNumber
   addressCurrentStake?: Address
+  enabled: boolean
 }
-export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Props) => {
+export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake, enabled }: Props) => {
   console.log("stakeAmount", stakeAmount)
 
   const {
@@ -17,7 +17,7 @@ export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Pr
   } = usePrepareArkaStakingDeposit({
     address: addressCurrentStake,
     args: [stakeAmount],
-    enabled: !isAddressZero(addressCurrentStake) && (stakeAmount || BigNumber.from(0)).gt(0),
+    enabled,
   })
   const { data, isError, error, write } = useArkaStakingDeposit(config)
 
