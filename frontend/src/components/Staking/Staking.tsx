@@ -100,24 +100,7 @@ export const Staking = () => {
     writeApprove?.()
   }
 
-  /*
-  
-   
-    si stake non fini
-      affichage des informations sur le stake en cours: date de fin, montant
-      si pas d'arka stakés encore, ajout form
-      sinon, affichage des arkas stakés
-    si stake fini
-      si pas d'arka stakés, affichage "aucun arka staké"
-      sinon, affichage des arkas stakés + récompense + bouton pour récupérer les arkas + bouton pour récupérer les récompenses
-
-  
-  Form pour ajouter des arka
-  - faire un approve sur ArkaERC20 du montant
-  - faire un deposit sur ArkaStaking du montant
-  - vérifier dans Remix que le stakedBalanceOf est bien mis à jour
-
-  */
+  // TODO: faire le withdraw
 
   return (
     <main>
