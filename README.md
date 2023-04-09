@@ -6,6 +6,14 @@ La stack technique repose sur hardhat, côté backend et Next.js côté front (v
 
 <img width="1493" alt="image" src="https://user-images.githubusercontent.com/3749428/230745140-6a953d40-3778-4406-92cc-0036ee82adbe.png">
 
+## Table des matières
+
+- [Sepolia](#d%C3%A9mo-sur-sepolia)
+- [Tests](#tests)
+- [Développement](#workflow-en-d%C3%A9veloppement)
+- [Wagmi](#g%C3%A9n%C3%A9rer-les-types-et-les-hooks-de-wagmi)
+- [FAQ](#faq)
+
 ### Démo sur Sepolia
 
 https://arka-swapr.vercel.app/
