@@ -12,34 +12,11 @@ https://arka-swapr.vercel.app/
 
 ### Smart contracts sur Sepolia 
 
+<pre>
 Oracle deployed to 0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339
 ArkaERC20 deployed to 0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48
 ArkaMaster deployed to 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
-
-### Workflow en développement
-
-```shell
-npx hardhat node
-cd backend
-npx hardhat run scripts/deployArka --network localhost # récupérer l'adresse du contrat (et éventuellement, copier l'ABI si changement)
-cd ../frontend
-
-# modifier adresse du contrat + abi dans frontend/src/contracts/ArkaMaster.ts/
-
-yarn dev # va lancer `yarn wagmi generate` préalablement (cf. package.json)
-```
-### Mémo CLI hardhat
-
-```shell
-npx hardhat help # aide 
-npx hardhat test # lancer les tests en local
-REPORT_GAS=true npx hardhat test  # lancer les tests avec résumé sur le coût en gas
-npx hardhat node # Lancer un client Ethereum en local. Possibilité de forker le mainnet (cf. hardhat.config.ts)
-npx hardhat run scripts/deploy.ts # Lancer un script de déploiement qui va déployer des smart contracts
-npx hardhat run scripts/deploy.ts --network sepolia # Déploiement sur sepolia
-```
-
-PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
+</pre>
 
 ### Déploiement sur Sepolia
 
@@ -51,23 +28,11 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 <details>
 <summary>
 
-#### Markdown *in* `summary`
+#### Vérification `etherscan`
 
 </summary>
 
-Hi.
-
-</details>
-
-
-<details>
-<summary>
-
-#### Vérification etherscan
-
-</summary>
-
-<code>
+<pre>
 ❯ npx hardhat verify --network sepolia 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9 
 
 "0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48" "0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339"
@@ -80,7 +45,7 @@ for verification on the block explorer. Waiting for verification result...
 
 Successfully verified contract ArkaMaster on Etherscan.
 https://sepolia.etherscan.io/address/0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9#code
-</code>
+</pre>
 
 </details>
 
@@ -95,9 +60,10 @@ https://sepolia.etherscan.io/address/0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9#
 <details>
 <summary>
 
-### Résulat des tests au 8 avril 2023
+#### Résulat des tests au 8 avril 2023
 
 </summary>
+
 <pre>
   ArkaERC20
     ✔ sets correctly the address of ArkaMaster, test storage (1857ms)
@@ -141,10 +107,16 @@ https://sepolia.etherscan.io/address/0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9#
 
   26 passing (3s)
   </pre>
+
 </details>
 
 <details>
-<summary>Couverture des tests au 8 avril 2023</summary>
+<summary>
+
+#### Couverture des tests au 8 avril 2023
+
+</summary>
+
 <pre>
 |File                  |  % Stmts | % Branch |  % Funcs |  % Lines |Uncovered Lines |
 |----------------------|----------|----------|----------|----------|----------------|
@@ -157,7 +129,35 @@ https://sepolia.etherscan.io/address/0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9#
 |All files             |    88.89 |       66 |     91.3 |    91.43 |                |
 |----------------------|----------|----------|----------|----------|----------------|
 </pre>
+
 </details>
+
+### Workflow en développement
+
+```shell
+npx hardhat node
+cd backend
+npx hardhat run scripts/deployArka --network localhost # récupérer l'adresse du contrat (et éventuellement, copier l'ABI si changement)
+cd ../frontend
+
+# modifier adresse du contrat + abi dans frontend/src/contracts/ArkaMaster.ts/
+
+yarn dev # va lancer `yarn wagmi generate` préalablement (cf. package.json)
+```
+### Mémo CLI hardhat
+
+```shell
+npx hardhat help # aide 
+npx hardhat test # lancer les tests en local
+REPORT_GAS=true npx hardhat test  # lancer les tests avec résumé sur le coût en gas
+npx hardhat node # Lancer un client Ethereum en local. Possibilité de forker le mainnet (cf. hardhat.config.ts)
+npx hardhat run scripts/deploy.ts # Lancer un script de déploiement qui va déployer des smart contracts
+npx hardhat run scripts/deploy.ts --network sepolia # Déploiement sur sepolia
+```
+
+PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
+
+
 
 ### Générer les types et les hooks de Wagmi
 
