@@ -253,3 +253,8 @@ Solution
 **Problème dans les logs d'ethers. Nonce pas cohérent.**
 
 C'est un problème du wallet. Aller dans MetaMask > Paramètres avancés > Réinitialiser le compte.
+
+**Problème de nonce trop élevé lors de l'appel d'un contrat**
+
+C'est un problème de MetaMask avec un noeud Ethereum local.
+Il faut aller dans Paramètres avancées > Effacer les données d'activité et de nonce, pour chacun des accounts qui posent problème.
