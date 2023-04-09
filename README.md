@@ -7,6 +7,8 @@ La stack technique repose côté backend sur la suite hardhat.
 Côté frontend, on utilise Next.js en TS, avec wagmi/ethers.js comme client ethereum et Chakra UI.
 L'app Next a été créée via `npx create next-app --typescript`.
 
+[Vidéo](https://drive.google.com/file/d/1BdSk165Tss99CKPuB6TRKBsDgGZrkVP8/view?usp=sharing) de démonstration.
+
 <img width="1493" alt="image" src="https://user-images.githubusercontent.com/3749428/230745140-6a953d40-3778-4406-92cc-0036ee82adbe.png">
 
 ## Table des matières
