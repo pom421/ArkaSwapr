@@ -25,18 +25,16 @@ https://arka-swapr.vercel.app/
 
 ### Smart contracts sur Sepolia 
 
+```shell
+# Auparavant, changer dans scripts/deploytArka.ts l'adresse de ChainLink ! En local, on veut celui de mainnet. 
+❯ npx hardhat run scripts/deployArka.ts --network sepolia
+```
+
 <pre>
 Oracle deployed to 0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339
 ArkaERC20 deployed to 0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48
 ArkaMaster deployed to 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
 </pre>
-
-### Déploiement sur Sepolia
-
-```shell
-# Auparavant, changer dans scripts/deploytArka.ts l'adresse de ChainLink ! En local, on veut celui de mainnet. 
-❯ npx hardhat run scripts/deployArka.ts --network sepolia
-```
 
 <details>
 <summary>
@@ -49,10 +47,6 @@ ArkaMaster deployed to 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
 ❯ npx hardhat verify --network sepolia {arkaMaster.address}
  "{arkaERC20.address}" "{oracle.address}"
 
-❯ npx hardhat verify --network sepolia 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9 
- "0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48" "0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339"
-
-INFURA_ID edac3c26035f400981d2634401b83dcd
 Nothing to compile
 No need to generate any newer typings.
 Successfully submitted source code for contract
@@ -210,8 +204,6 @@ npx hardhat run scripts/deploy.ts --network sepolia # Déploiement sur sepolia
 ```
 
 PS: si on ne met pas l'option `--network`, il va lancer le script sur une instance de hardhat node en mémoire, donc pas accessible ensuite en Remix p. ex. Donc toujours mettre renseigner cette option.
-
-
 
 ### Générer les types et les hooks de Wagmi
 
