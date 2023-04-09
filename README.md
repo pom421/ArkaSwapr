@@ -48,6 +48,42 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ❯ npx hardhat run scripts/deployArka.ts --network sepolia
 ```
 
+<details>
+<summary>
+
+#### Markdown *in* `summary`
+
+</summary>
+
+Hi.
+
+</details>
+
+
+<details>
+<summary>
+
+#### Vérification etherscan
+
+</summary>
+
+<code>
+❯ npx hardhat verify --network sepolia 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9 
+
+"0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48" "0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339"
+INFURA_ID edac3c26035f400981d2634401b83dcd
+Nothing to compile
+No need to generate any newer typings.
+Successfully submitted source code for contract
+contracts/ArkaMaster.sol:ArkaMaster at 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
+for verification on the block explorer. Waiting for verification result...
+
+Successfully verified contract ArkaMaster on Etherscan.
+https://sepolia.etherscan.io/address/0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9#code
+</code>
+
+</details>
+
 ### Tests
 
 ```shell
@@ -57,7 +93,11 @@ PS: si on ne met pas l'option `--network`, il va lancer le script sur une instan
 ```
 
 <details>
-<summary>Résulat des tests au 8 avril 2023</summary>
+<summary>
+
+### Résulat des tests au 8 avril 2023
+
+</summary>
 <pre>
   ArkaERC20
     ✔ sets correctly the address of ArkaMaster, test storage (1857ms)
