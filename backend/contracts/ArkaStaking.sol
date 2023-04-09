@@ -180,12 +180,13 @@ contract ArkaStaking {
      * @notice This function is used to claim the reward when the staking is finished.
      */
     function claimReward() external updateReward(msg.sender) {
-        if (rewards[msg.sender] > 0) {
-            (bool sent, ) = payable(msg.sender).call{
-                value: rewards[msg.sender]
-            }("");
-            require(sent, "Failed to send Ether");
+        uint reward = rewards[msg.sender];
+
+        if (reward > 0) {
+            // Reset the rewards to 0 first, to prevent reentrancy.
             rewards[msg.sender] = 0;
+            (bool sent, ) = payable(msg.sender).call{value: reward}("");
+            require(sent, "Failed to send Ether");
         }
 
         emit RewardClaimed(msg.sender);

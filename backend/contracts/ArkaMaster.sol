@@ -27,13 +27,10 @@ contract ArkaMaster is Ownable {
 
     /**
      * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
+     * (unit16 gives us up to 65k USD)
      */
-    uint usdPrice7days = 10; // Initial price. May change in the future with a DAO to set this price.
+    uint16 usdPrice7days = 10; // Initial price in USD. May change in the future with a DAO to set this price.
 
-    /**
-     * @dev The price of a proposal is 7 days of hosting on ArkaSwapr.
-     */
-    uint etherPrice7days = 6e14; // 0,000600 ETH, aka 10€ en avril 2023
     /**
      * @dev The reward for interacting with a resource is 2 ARKA.
      */
@@ -49,6 +46,7 @@ contract ArkaMaster is Ownable {
     }
     /**
      * @notice An interaction is a reaction of a user on a resource.
+     * (The compiler will use uint8 for this enum).
      */
     enum InteractType {
         unset,

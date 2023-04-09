@@ -43,6 +43,8 @@ export const Admin = () => {
   const [rewardAmount, setRewardAmount] = useState("")
   const debouncedRewardAmount = useDebounce(rewardAmount, 500)
 
+  console.log("debouncedRewardAmount:", debouncedRewardAmount)
+
   const color = useColorModeValue("blue.500", "cyan.500")
 
   // Get current stake address, if any and its total suply.

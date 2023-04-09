@@ -8,6 +8,8 @@ type Props = {
   addressCurrentStake?: Address
 }
 export const useCustomStakingDeposit = ({ stakeAmount, addressCurrentStake }: Props) => {
+  console.log("stakeAmount", stakeAmount)
+
   const {
     config,
     isError: isErrorPrepare,

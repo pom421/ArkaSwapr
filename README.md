@@ -10,6 +10,12 @@ La stack technique repose sur hardhat, côté backend et Next.js côté front (v
 
 https://arka-swapr.vercel.app/
 
+### Smart contracts sur Sepolia 
+
+Oracle deployed to 0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339
+ArkaERC20 deployed to 0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48
+ArkaMaster deployed to 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
+
 ### Workflow en développement
 
 ```shell
