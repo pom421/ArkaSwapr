@@ -33,9 +33,12 @@ ArkaMaster deployed to 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9
 </summary>
 
 <pre>
-❯ npx hardhat verify --network sepolia 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9 
+❯ npx hardhat verify --network sepolia {arkaMaster.address}
+ "{arkaERC20.address}" "{oracle.address}"
 
-"0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48" "0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339"
+❯ npx hardhat verify --network sepolia 0x5BBD3AB995f4D37B0cEBB59e0b22e336576fABc9 
+ "0x5Ccd9eDb23ABCE0ef87E0B17BB378bcAc9DF8B48" "0x8b8D5e6D236831EE48f7CfCc68AF1A9D7648F339"
+
 INFURA_ID edac3c26035f400981d2634401b83dcd
 Nothing to compile
 No need to generate any newer typings.
