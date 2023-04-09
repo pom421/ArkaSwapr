@@ -1,8 +1,11 @@
 ## ArkaSwapr
 
-Un protocole pour récompenser l'attention des utilisateurs sur des ressources.
+Un protocole pour récompenser l'attention des utilisateurs qui visitent des sites web.
 
-La stack technique repose sur hardhat, côté backend et Next.js côté front (via `npx create next-app --typescript`), avec wagmi/ethers.js et Chakra UI.
+La stack technique repose côté backend sur la suite hardhat. 
+
+Côté frontend, on utilise Next.js en TS, avec wagmi/ethers.js comme client ethereum et Chakra UI.
+L'app Next a été créée via `npx create next-app --typescript`.
 
 <img width="1493" alt="image" src="https://user-images.githubusercontent.com/3749428/230745140-6a953d40-3778-4406-92cc-0036ee82adbe.png">
 
