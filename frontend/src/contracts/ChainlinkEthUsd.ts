@@ -1,6 +1,6 @@
 // TODO: delete because we use getPrice in ArkaMaster
 
-export const ChainlinkEthUsdAddress = "0xB1c05b498Cb58568B2470369FEB98B00702063dA"
+export const ChainlinkEthUsdAddress = "0x0bF7dE8d71820840063D4B8653Fd3F0618986faF"
 
 export const ChainlinkEthUsdAbi = [
   {
