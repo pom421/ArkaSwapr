@@ -3,6 +3,8 @@ import { useWaitForTransaction } from "wagmi"
 
 type Props = {
   enabled?: boolean
+  onSuccess?: () => void
+  onError?: () => void
 }
 
 /**
@@ -10,7 +12,7 @@ type Props = {
  *
  * @param enabled Whether the hook is enabled or not
  */
-export const useCustomEndStake = ({ enabled = true }: Props = {}) => {
+export const useCustomEndStake = ({ enabled, onSuccess, onError }: Props = {}) => {
   const {
     config,
     isError: isErrorPrepare,
@@ -19,7 +21,7 @@ export const useCustomEndStake = ({ enabled = true }: Props = {}) => {
     enabled, // Bug in Wagmi. Even with enabled set to false, a call to blockchain is made.
   })
 
-  const { data, isError, error, write } = useArkaMasterEndCurrentStake(config)
+  const { data, isError, error, write } = useArkaMasterEndCurrentStake({ ...config, onSuccess, onError })
 
   const { isLoading, isSuccess } = useWaitForTransaction({
     hash: data?.hash,

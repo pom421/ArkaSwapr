@@ -8,11 +8,6 @@ import { formatTimestamp } from "@/utils/date"
 import { hasErrors } from "@/utils/errors"
 // prettier-ignore
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
   Button,
   Container,
   Flex,
@@ -26,11 +21,13 @@ import {
   NumberInputField,
   NumberInputStepper,
   Text,
-  useColorModeValue
+  useColorModeValue,
+  useToast
 } from "@chakra-ui/react"
 import { useAutoAnimate } from "@formkit/auto-animate/react"
+import { ethers } from "ethers"
 import { formatEther, parseEther } from "ethers/lib/utils.js"
-import { FormEvent, useEffect, useState } from "react"
+import { FormEvent, useState } from "react"
 import { useBalance } from "wagmi"
 
 type FormProps = {
@@ -39,73 +36,90 @@ type FormProps = {
 
 export const Admin = () => {
   const [parent] = useAutoAnimate()
-  const [errors, setErrors] = useState<FormProps & { globalError?: string }>({})
+  const toast = useToast()
+  const color = useColorModeValue("blue.500", "cyan.500")
+  const [errors, setErrors] = useState<FormProps>({})
   const [rewardAmount, setRewardAmount] = useState("")
   const debouncedRewardAmount = useDebounce(rewardAmount, 500)
-
-  console.log("debouncedRewardAmount:", debouncedRewardAmount)
-
-  const color = useColorModeValue("blue.500", "cyan.500")
 
   // Get current stake address, if any and its total suply.
   const { addressCurrentStake, finishAt, totalSupply } = useCustomReadStaking()
 
   // Get balance in ETH of ArkaMaster contract.
-  const {
-    data: balanceData,
-    isError: isErrorBalance,
-    isLoading: isLoadingBalance,
-  } = useBalance({
+  const { data: balanceData, isLoading: isLoadingBalance } = useBalance({
     address: ArkaMasterContractAddress,
     watch: true,
+    onError: () => {
+      toast({
+        title: "Erreur.",
+        description: "Le solde du contrat n'a pas pu être récupéré.",
+        duration: 5000,
+        isClosable: true,
+        status: "error",
+      })
+    },
   })
 
   // Get helpers for creating a new stake.
-  const {
-    isError: isErrorNewStake,
-    error: errorNewStake,
-    isLoading: isLoadingNewStake,
-    isSuccess: isSuccessNewStake,
-    write: writeNewStake,
-  } = useCustomNewStake({
+  const { isLoading: isLoadingNewStake, write: writeNewStake } = useCustomNewStake({
     rewardAmount: parseEther(debouncedRewardAmount || "0"),
     enabled: parseEther(debouncedRewardAmount || "0").gt(parseEther("0")),
+    onSuccess: () => {
+      toast({
+        title: "Succès.",
+        description: "Le stake a bien été créé.",
+        duration: 5000,
+        isClosable: true,
+        status: "success",
+      })
+    },
+    onError: () => {
+      toast({
+        title: "Erreur.",
+        description: "Le stake n'a pas été créé.",
+        duration: 5000,
+        isClosable: true,
+        status: "error",
+      })
+    },
   })
 
   // Get helpers for ending a stake.
-  const {
-    isError: isErrorEndStake,
-    error: errorEndStake,
-    isLoading: isLoadingEndStake,
-    isSuccess: isSuccessEndStake,
-    write: writeEndStake,
-  } = useCustomEndStake({ enabled: finishAt && isFinisdhedStake(finishAt) })
-
-  useEffect(() => {
-    if (isErrorBalance) setErrors({ globalError: "Erreur lors de la récupération du solde" })
-    if (isErrorNewStake) setErrors({ globalError: "Erreur lors de la création du contrat de staking" })
-    if (isErrorEndStake)
-      setErrors({
-        globalError: errorEndStake?.message || "Erreur lors de la fermeture du contrat de staking",
+  const { isLoading: isLoadingEndStake, write: writeEndStake } = useCustomEndStake({
+    enabled: Boolean(finishAt && isFinisdhedStake(finishAt) && !isAddressZero(addressCurrentStake)),
+    onSuccess: () => {
+      toast({
+        title: "Succès.",
+        description: "Le stake a été achevé correctement.",
+        duration: 5000,
+        isClosable: true,
+        status: "success",
       })
-  }, [errorEndStake?.message, errorNewStake?.message, isErrorBalance, isErrorEndStake, isErrorNewStake])
+    },
+    onError: () => {
+      toast({
+        title: "Erreur.",
+        description: "Le stake ne s'est pas achevé correctement.",
+        duration: 5000,
+        isClosable: true,
+        status: "error",
+      })
+    },
+  })
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
+    // This case is already handled by the onError but it's necessary to narrow the type.
+    if (balanceData?.value === undefined) return
+
     if (isNaN(Number(rewardAmount))) return setErrors({ rewardAmount: "Veuillez renseigner un montant valide" })
-    if (balanceData?.value === undefined) return setErrors({ globalError: "Erreur lors de la récupération du solde" })
     if (rewardAmount === "") return setErrors({ rewardAmount: "Veuillez renseigner un montant" })
     if (balanceData?.value.isZero()) return setErrors({ rewardAmount: "Pas de fonds disponibles" })
     if (parseEther(rewardAmount).gt(parseEther(balanceData.formatted)))
       return setErrors({ rewardAmount: "Montant trop élevé" })
 
-    try {
-      writeNewStake?.()
-    } catch (error: unknown) {
-      console.error("Error while writing to contract", error)
-      if (error instanceof Error) setErrors({ globalError: "Erreur lors de la création du contrat de staking 😣" })
-    }
+    writeNewStake?.()
   }
 
   return (
@@ -121,29 +135,10 @@ export const Admin = () => {
           </Heading>
           <Text fontSize="lg">Lancement de stake ou stake actuel.</Text>
 
-          {(isSuccessNewStake || isSuccessEndStake) && (
-            <Alert status="success">
-              <AlertIcon />
-              <Box>
-                <AlertTitle>{isSuccessNewStake ? "Stake créé" : "Stake terminé"}</AlertTitle>
-              </Box>
-            </Alert>
-          )}
-
-          {errors.globalError && (
-            <Alert status="warning">
-              <AlertIcon />
-              <Box>
-                <AlertTitle>Erreur</AlertTitle>
-                <AlertDescription>{errors.globalError}</AlertDescription>
-              </Box>
-            </Alert>
-          )}
-
           <Text fontSize="lg">
             ETH disponible
             <Text as="span" color={color} ml="4">
-              {balanceData?.formatted}
+              {balanceData?.formatted} {ethers.constants.EtherSymbol}
             </Text>
           </Text>
 
