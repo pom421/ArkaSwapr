@@ -112,9 +112,7 @@ export default function Propose() {
 
           <Text fontSize="lg">Proposer un nouveau site que tous les utilisateurs pourront voir.</Text>
 
-          <Text fontSize="lg">
-            Seulement 10$ (en équivalent ether) pour 7 jours de visibilité. Paiement en USDT ou en wETH.
-          </Text>
+          <Text fontSize="lg">Seulement 10$ (en équivalent ether) pour 7 jours de visibilité.</Text>
 
           <div ref={parent}>
             {hasErrors(errors) && (
