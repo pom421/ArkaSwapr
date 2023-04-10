@@ -1,4 +1,4 @@
-export const ArkaERC20Address = "0x6484EB0792c646A4827638Fc1B6F20461418eB00"
+export const ArkaERC20Address = "0x04F339eC4D75Cf2833069e6e61b60eF56461CD7C"
 
 export const ArkaERC20Abi = [
   {
